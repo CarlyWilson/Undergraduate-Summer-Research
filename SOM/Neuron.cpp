@@ -13,10 +13,10 @@
 
 #include "Neuron.h"
 
-//Constructor
 Neuron::Neuron(vector<double> argPosition, size_t numWeights)
 {
 	fPosition = argPosition;
+	fVersion = 1;
 
 	double random;
 
@@ -80,25 +80,64 @@ double Neuron::GetDistanceFromNeuron(Neuron* argNeuron)
 
 void Neuron::AdjustWeight(vector<double> input, double factor)
 {
-	//cout fweight before and after 
-    if(fWeight.size()!=input.size())
+    if(fWeight.size()!= input.size())
     {
     	cout<<"Error! Cannot adjust weights!"<<endl;
         return;
     }
     for(size_t i = 0; i < input.size(); i++)
 	{
-			//cout<<"fWeight before in Neuron class AdjustWeight is: "<<fWeight[i]<<endl;
 		fWeight[i] = fWeight[i] + factor * (input[i] - fWeight[i]);
-			//cout<<"fWeight after in Neuron class AdjustWeight is: "<<fWeight[i]<<endl;
 	}
 }
-//output first
-//write first for neuron to cout neuron size of weight vector load weights, entries in weight vector, weight vector, position of weight vector
-/*ostream& operator<<(ostream &os, const Neuron& obj)
-{
-	//write obj to stream
-    os<<obj<<endl;
-    return os;
-}*/
 
+ostream& operator<<(ostream & stream, Neuron *arg)
+{
+	stream<<arg->fVersion<<" ";
+	stream<<arg->fPosition.size()<<" ";
+
+	for(size_t i = 0; i < arg->fPosition.size(); i++)
+	{
+		stream<<arg->fPosition[i]<<" ";
+	}
+
+	stream<<arg->fWeight.size()<<" ";
+
+	for(size_t k = 0; k < arg->fWeight.size(); k++)
+	{
+		stream<<arg->fWeight[k]<<" ";
+	}
+	stream<<endl;
+	return stream;
+}
+
+istream& operator>>(istream & stream, Neuron *arg)
+{
+	stream>>arg->fVersion;
+
+	if(arg->fVersion == 1)
+	{
+		size_t npos;
+		stream>>npos;
+		arg->fPosition.resize(npos);
+
+		for(size_t i = 0; i < npos; i++)
+		{
+			stream>>arg->fPosition[i];
+		}
+
+		size_t nw;
+		stream>>nw;
+		arg->fWeight.resize(nw);
+
+		for(size_t k = 0; k < nw; k++)
+		{
+			stream>>arg->fWeight[k];
+		}
+	}
+	else
+	{
+		cerr<<"Unknown version of Neuron"<<endl;
+	}
+	return stream;
+}

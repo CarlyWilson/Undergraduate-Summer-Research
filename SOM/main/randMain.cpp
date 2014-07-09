@@ -12,7 +12,7 @@
 #include "../Neuron.h"
 #include "../SOM.h"
 
-//make it so when it prints out it is readable 
+#include <fstream>
 
 int main(int argc, char* argv[])
 {
@@ -20,13 +20,13 @@ int main(int argc, char* argv[])
 	
 	vector<size_t> dimensions(2);
 
-	dimensions[0] = 5;// nx
-	dimensions[1] = 5;// ny
+	dimensions[0] = 25;// nx
+	dimensions[1] = 25;// ny
 
 	size_t numWeights = 4;
 
 	SOM* som = new SOM(dimensions, numWeights);
-	som->SetNEpochs(10000);
+	som->SetNEpochs(100000);
 	som->SetInitialLearningRate(0.9);
 
 	size_t nTraining = 10;
@@ -50,6 +50,22 @@ int main(int argc, char* argv[])
 	som->PrintNetwork();
 
 	Neuron* bmu = som->FindBMU(trainingData[0]);
+	cout<<bmu;
+
+	ofstream outfile;
+	outfile.open("testNeuron.dat");
+	outfile<<bmu;
+	outfile.close();
+
+	ifstream infile("testNeuron.dat");
+
+	vector<double> junk;
+	size_t numJunk = 0;
+
+	Neuron *n = new Neuron(junk, numJunk);// with junk inputs since they will be over written
+	infile>>n;
+	cout<<n;
+
 	vector<double> pos = bmu->GetPosition();
 
 	cout<<"The bmu is at position: ";
@@ -58,6 +74,6 @@ int main(int argc, char* argv[])
 	{
 		cout<<pos[i]<<" ";
 	}
-	
+
 	cout<<endl;
 }

@@ -19,7 +19,7 @@ SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 
 	fDimensions = argDimensions;
 	fInitialLearningRate = 0.9;
-	fnEpochs = 10000;
+	fnEpochs = 100000;
 	
 	if(ndim > 2)
 	{
@@ -101,6 +101,7 @@ void SOM::PrintNetwork()
  		}
 		cout<<endl;
 	}	
+	cout<<endl;
 }
 
 void SOM::SetNEpochs(size_t epochs)
@@ -139,16 +140,14 @@ void SOM::TrainNetwork(vector<vector<double> > trainingData)
 
 	TRandom3 rand;
 
-	for(int t = 0; t < fnEpochs; t++)
+	for(size_t t = 0; t < fnEpochs; t++)
 	{
-		double learningRate = fInitialLearningRate*exp((double)-t/(double)fnEpochs);
-		rt = Rmap*exp(-1*log(Rmap)/fnEpochs);
+		double learningRate = fInitialLearningRate*exp(-(double)t/(double)fnEpochs);
+		rt = Rmap*exp(-(double)t*log(Rmap)/(double)fnEpochs);
 		n = rand.Integer(nTraining);
 		Neuron *bmu = FindBMU(trainingData[n]);
-			//cout<<"trainingData[n] inside of SOM TrainNetwork is: "<<trainingData[n]<<endl;
-			//cout<<"Neuron *bmu inside of SOM TrainNetwork is: "<<bmu<<endl;
-			//cout<<"Neuron *bmu weight inside of SOM TrainNetwork is: "<<bmu->GetWeight()<<endl;
 		vector<double> bmuPosition = bmu->GetPosition();
+		vector<double> weights = bmu->GetWeight();
 
 		for(size_t i = 0; i < nNeurons; i++)
 		{
@@ -158,7 +157,3 @@ void SOM::TrainNetwork(vector<vector<double> > trainingData)
 		}
 	}
 }
-
-/*void PredictionPhase(vector<double> realTestData)
-{
-}*/

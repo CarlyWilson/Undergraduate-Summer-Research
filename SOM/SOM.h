@@ -24,7 +24,6 @@ class SOM
 		SOM(vector<size_t> argDimensions, size_t numWeights);
 		Neuron* FindBMU(vector<double> argInput);
 		void TrainNetwork(vector<vector<double> > trainingData);
-		//void PredictionPhase(vector<vector<double> > realTestData);
 		void PrintNetwork();
 		void SetNEpochs(size_t epochs);
 		void SetInitialLearningRate(double initialLearningRate);

@@ -53,14 +53,14 @@
 	{
 		t->GetEntry(i);
 
-		if(event->GetWaveforms()<1)continue;
+			if(event->GetWaveforms()<1)continue;
 
-    		Wave=event->GetWaveform(0);
-    		base->TransformInPlace(*Wave);
-    		energy=event->GetDigitizerData(0)->GetEnergy();
-    		filter->TransformOutOfPlace(*Wave,*FilteredWave);
+    	Wave=event->GetWaveform(0);
+    	base->TransformInPlace(*Wave);
+    	energy=event->GetDigitizerData(0)->GetEnergy();
+    	filter->TransformOutOfPlace(*Wave,*FilteredWave);
 
-    		filterenergy=filter->GetMaximum();
+    	filterenergy=filter->GetMaximum();
 
 		h1[i] = Wave->GimmeHist();
 		h1[i]->SetName("wave");
@@ -73,6 +73,8 @@
 
 		h1[i]->GetYaxis()->SetRangeUser(TMath::Min(h1[i]->GetMinimum(), 0.0), 1.05*TMath::Max(h1[i]->GetMaximum(), 0.0));
 		h1[i]->SetTitle(title);
+
+		h1[i]->SetLineWidth(3);
 
 			if(i > 0 && i < 20) h1[i]->SetLineColor(i + 1);
 			else if(i >= 20 && i > 0) h1[i]->SetLineColor(i - 1);
@@ -93,7 +95,6 @@
   			}
 
   		cout<<"The maximum is "<<maxHeight<<" at "<<h1[i]->GetBinCenter(maxBin)<<" T50 is at "<<h1[i]->GetBinCenter(T50Bin)<<endl;
-  		//Now make a new histogram, with the +/- 100 entries around T50.
 
 			for(size_t j = 1; j < 101; j++);
 			{
@@ -101,7 +102,7 @@
 				v100[i] = h1[i]->GetBinContent(T50Bin - 50 + j);
 			}
 
-		h100->Draw();//be careful if T50Bin<50 or > hwave->GetNbinsX()
+		//h100->Draw();//be careful if T50Bin<50 or > hwave->GetNbinsX()
 
         cout<<"energy "<<energy<<" filter energy "<<filterenergy<<endl;
 		
