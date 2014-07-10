@@ -95,12 +95,10 @@ ostream& operator<<(ostream & stream, Neuron *arg)
 {
 	stream<<arg->fVersion<<" ";
 	stream<<arg->fPosition.size()<<" ";
-
 	for(size_t i = 0; i < arg->fPosition.size(); i++)
 	{
 		stream<<arg->fPosition[i]<<" ";
 	}
-
 	stream<<arg->fWeight.size()<<" ";
 
 	for(size_t k = 0; k < arg->fWeight.size(); k++)
@@ -114,7 +112,6 @@ ostream& operator<<(ostream & stream, Neuron *arg)
 istream& operator>>(istream & stream, Neuron *arg)
 {
 	stream>>arg->fVersion;
-
 	if(arg->fVersion == 1)
 	{
 		size_t npos;

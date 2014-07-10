@@ -57,14 +57,26 @@ int main(int argc, char* argv[])
 	outfile<<bmu;
 	outfile.close();
 
+	outfile.open("testSOM.dat");
+	outfile<<som;
+	outfile.close();
+
 	ifstream infile("testNeuron.dat");
 
 	vector<double> junk;
+	vector<size_t> junky;
 	size_t numJunk = 0;
 
 	Neuron *n = new Neuron(junk, numJunk);// with junk inputs since they will be over written
 	infile>>n;
 	cout<<n;
+	infile.close();
+
+	infile.open("testSOM.dat");
+	SOM *s = new SOM(junky, numJunk);
+	infile>>s;
+	cout<<s;
+	infile.close();
 
 	vector<double> pos = bmu->GetPosition();
 

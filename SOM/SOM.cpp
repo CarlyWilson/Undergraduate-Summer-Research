@@ -20,6 +20,8 @@ SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 	fDimensions = argDimensions;
 	fInitialLearningRate = 0.9;
 	fnEpochs = 100000;
+
+	fVersion = 1;
 	
 	if(ndim > 2)
 	{
@@ -83,24 +85,10 @@ Neuron* SOM::FindBMU(vector<double> argInput)
 
 void SOM::PrintNetwork()
 {
-	size_t n = fNeurons.size();
-
-	for (size_t i = 0; i < n; i++)
+	for (size_t i = 0; i < fNeurons.size(); i++)
 	{
-  		vector<double> pos = fNeurons[i]->GetPosition();
-  		cout<<"Neuron "<<i<<" position: ";
-  		for(size_t j = 0; j < pos.size(); j++)
-		{
-   			cout<<pos[j]<<" ";
-  		}
-  		vector<double> w = fNeurons[i]->GetWeight();
-  		cout<<"Weights: ";
-  		for(size_t j = 0; j < w.size(); j++)
-		{
-   			cout<<w[j]<<" ";
- 		}
-		cout<<endl;
-	}	
+		cout<<fNeurons[i];
+	}
 	cout<<endl;
 }
 
@@ -112,6 +100,59 @@ void SOM::SetNEpochs(size_t epochs)
 void SOM::SetInitialLearningRate(double initialLearningRate)
 {
 		fInitialLearningRate = initialLearningRate;
+}
+
+ostream &operator<<(ostream & stream, SOM *arg)
+{
+	stream<<arg->fVersion<<" ";
+	stream<<arg->fNeurons.size()<<" ";
+
+	for(size_t i = 0; i < arg->fNeurons.size(); i++)
+	{
+		stream<<arg->fNeurons[i]<<" ";
+	}
+
+	stream<<arg->fDimensions.size()<<" ";
+	
+	for(size_t k = 0; k < arg->fDimensions.size(); k++)
+	{
+			stream<<arg->fDimensions[k]<<" ";
+	}
+	stream<<endl;
+	return stream;
+}
+
+istream &operator>>(istream & stream, SOM *arg)
+{
+	stream>>arg->fVersion;
+
+	if(arg->fVersion == 1)
+	{
+		size_t nNeurons;
+		stream>>nNeurons;
+		cout<<"nNeurons: "<<nNeurons<<endl;
+		arg->fNeurons.resize(nNeurons);
+
+		vector<double> trash;
+		size_t junk = 0;
+
+		for(size_t k = 0; k < nNeurons; k++)
+		{
+			arg->fNeurons[k] = new Neuron(trash, junk);
+			stream>>arg->fNeurons[k];
+		}
+		size_t ndim;
+		stream>>ndim;
+		arg->fDimensions.resize(ndim);
+		for(size_t i = 0; i < ndim; i++)
+		{
+			stream>>arg->fDimensions[i];
+		}
+	}
+	else
+	{
+		cerr<<"Unknown version of SOM"<<endl;
+	}
 }
 
 void SOM::TrainNetwork(vector<vector<double> > trainingData)
