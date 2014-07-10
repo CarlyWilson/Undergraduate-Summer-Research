@@ -118,6 +118,9 @@ ostream &operator<<(ostream & stream, SOM *arg)
 	{
 			stream<<arg->fDimensions[k]<<" ";
 	}
+
+	stream<<arg->fnEpochs<<" ";
+	stream<<arg->fInitialLearningRate<<" ";
 	stream<<endl;
 	return stream;
 }
@@ -148,6 +151,9 @@ istream &operator>>(istream & stream, SOM *arg)
 		{
 			stream>>arg->fDimensions[i];
 		}
+
+		stream>>arg->fnEpochs;
+		stream>>arg->fInitialLearningRate;
 	}
 	else
 	{
