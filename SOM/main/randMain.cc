@@ -1,6 +1,6 @@
 //--------------------------------
 //
-// Name: randMain.cpp
+// Name: randMain.cc
 //
 // Description: Initializes a network with random weight vectors, prints the network, 
 //	then finds the BMU to some input vector, and displays the position vector of that BMU
@@ -9,8 +9,8 @@
 //
 //-------------------------------
 
-#include "../Neuron.h"
-#include "../SOM.h"
+#include "../Neuron.hh"
+#include "../SOM.hh"
 
 #include <fstream>
 

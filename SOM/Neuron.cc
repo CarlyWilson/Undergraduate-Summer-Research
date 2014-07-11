@@ -1,6 +1,6 @@
 //---------------------------------
 //
-// Name: Neuron.c
+// Name: Neuron.cc
 //
 // Description: initalizes neuron constructor
 //
@@ -11,7 +11,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "Neuron.h"
+#include "Neuron.hh"
 
 Neuron::Neuron(vector<double> argPosition, size_t numWeights)
 {

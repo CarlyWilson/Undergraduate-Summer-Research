@@ -1,6 +1,6 @@
 //------------------------------
 //
-// Name: SOM.h
+// Name: SOM.hh
 //
 // Description: defines a self organizing map (SOM)
 //
@@ -8,13 +8,14 @@
 //
 //-------------------------------
 
-#ifndef SOM_H
-#define SOM_H
+#ifndef SOM_HH
+#define SOM_HH
 
 #include <iostream>
 #include <vector>
+#include <TH1F.h>
 
-#include "Neuron.h"
+#include "Neuron.hh"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ class SOM
 	public: 
 		SOM(vector<size_t> argDimensions, size_t numWeights);
 		Neuron* FindBMU(vector<double> argInput);
+		TH1F PlotNeuron(size_t arg);
 		void TrainNetwork(vector<vector<double> > trainingData);
 		void PrintNetwork();
 		void SetNEpochs(size_t epochs);

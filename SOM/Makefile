@@ -11,7 +11,7 @@
 #After a make clean, make has to be run twice to make the library.
 #R. Martin
 
-SrcSuf = cpp #hardcoded in some spots... 
+SrcSuf = cc #hardcoded in some spots... 
 ObjSuf = o
 ExeSuf = 
 CXX = g++
@@ -23,17 +23,23 @@ SOFLAGS  = -shared
 ROOTLIB= $(shell root-config --libs)
 ROOTINCLUDE = -I$(ROOTSYS)/include
 
-ALLINC= $(ROOTINCLUDE)
-ALLLIB= $(ROOTLIB) -lfftw3 -lm -lgmpxx -lgmp
+CLHEPINCLUDE = -I$(CLHEP_INCLUDE_DIR)
+CLHEPLIB = -L$(CLHEP_LIB_DIR) -lCLHEP
+
+MGDOLIB= -L$(MGDODIR)/lib -lMGDOBase -lMGDOMajorana -lMGDORoot -lMGDOTransforms $(CLHEPLIB)
+MGDOINCLUDE=-I$(MGDODIR)/Base -I$(MGDODIR)/Majorana -I$(MGDODIR)/Transforms -I$(MGDODIR)/Root $(CLHEPINCLUDE)
+
+ALLINC= $(ROOTINCLUDE) $(MGDOINCLUDE)
+ALLLIB= $(ROOTLIB) -lfftw3 -lm -lgmpxx -lgmp $(MGDOLIB)
 
 EXESRC := $(wildcard main/*.$(SrcSuf))
-EXEOBJ := $(EXESRC:.cpp=.o)
+EXEOBJ := $(EXESRC:.cc=.o)
 EXE :=  $(patsubst main/%.$(ObjSuf), %$(ExeSuf), $(wildcard  main/*.$(ObjSuf)))
 #$(EXESRC:.cc= )
 
 
-SRC := $(wildcard *.cpp)
-OBJ := $(SRC:.cpp=.o)
+SRC := $(wildcard *.cc)
+OBJ := $(SRC:.cc=.o)
 
 
 

@@ -1,6 +1,6 @@
 //----------------------------
 //
-// Name: SOM.c
+// Name: SOM.cc
 //
 // Description: contains implementations of functions listed in SOM.h
 //
@@ -11,7 +11,7 @@
 #include <math.h>
 
 #include <TRandom3.h>
-#include "SOM.h"
+#include "SOM.hh"
 
 SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 {
@@ -81,6 +81,30 @@ Neuron* SOM::FindBMU(vector<double> argInput)
 	}
 
 	return BMNeuron;
+}
+
+TH1F SOM::PlotNeuron(size_t arg)
+{
+	vector<double> weight = fNeurons[arg]->GetPosition();
+	size_t n = weight.size();
+	string title;
+	stringstream titlestream;
+	titlestream<<"Neuron";
+	vector<double> pos = fNeurons[arg]->GetPosition();
+
+	for(size_t i = 0; i < pos.size(); i++)
+	{
+		titlestream<<" "<<pos[i];
+	}
+
+	title = titlestream.str();
+	TH1F h = (title.c_str(), "", n, 0, n);
+
+	for(size_t j = 0; j < n; j++)
+	{
+		h.SetBinContent(j + 1, weight[j]);
+	}
+	return h;
 }
 
 void SOM::PrintNetwork()
