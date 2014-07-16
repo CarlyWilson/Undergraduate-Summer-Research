@@ -24,7 +24,7 @@ class SOM
 	public: 
 		SOM(vector<size_t> argDimensions, size_t numWeights);
 		Neuron* FindBMU(vector<double> argInput);
-		TH1F PlotNeuron(size_t arg);
+		TH1D PlotNeuron(size_t arg);
 		void TrainNetwork(vector<vector<double> > trainingData);
 		void PrintNetwork();
 		void SetNEpochs(size_t epochs);
@@ -43,6 +43,7 @@ class SOM
 			stream>>(&arg);
 			return stream;
 		};
+		vector<Neuron*> fNeurons;
 
 	private: 
 		vector<size_t> fDimensions;
@@ -51,7 +52,6 @@ class SOM
 		size_t fnEpochs;
 		size_t fVersion;
 
-		vector<Neuron*> fNeurons;
 		Neuron* BMNeuron;
 };
 

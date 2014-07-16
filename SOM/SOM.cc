@@ -9,7 +9,8 @@
 //----------------------------
 
 #include <math.h>
-
+#include <sstream> 
+#include <TH1F.h>
 #include <TRandom3.h>
 #include "SOM.hh"
 
@@ -83,9 +84,9 @@ Neuron* SOM::FindBMU(vector<double> argInput)
 	return BMNeuron;
 }
 
-TH1F SOM::PlotNeuron(size_t arg)
+TH1D SOM::PlotNeuron(size_t arg)
 {
-	vector<double> weight = fNeurons[arg]->GetPosition();
+	vector<double> weight = fNeurons[arg]->GetWeight();
 	size_t n = weight.size();
 	string title;
 	stringstream titlestream;
@@ -94,11 +95,11 @@ TH1F SOM::PlotNeuron(size_t arg)
 
 	for(size_t i = 0; i < pos.size(); i++)
 	{
-		titlestream<<" "<<pos[i];
+		titlestream<<"_"<<pos[i];
 	}
 
 	title = titlestream.str();
-	TH1F h = (title.c_str(), "", n, 0, n);
+	TH1D h(title.c_str(), "", n, 0, n);
 
 	for(size_t j = 0; j < n; j++)
 	{
