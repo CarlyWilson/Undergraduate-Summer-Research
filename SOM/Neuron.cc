@@ -17,6 +17,7 @@ Neuron::Neuron(vector<double> argPosition, size_t numWeights)
 {
 	fPosition = argPosition;
 	fVersion = 1;
+	fPopularity = 0; 
 
 	double random;
 
@@ -37,6 +38,11 @@ void Neuron::SetWeight(vector<double> argWeight)
 	fWeight = argWeight; 
 }
 
+void Neuron::IncreasePopularity(double numOfWaveforms)
+{
+	fPopularity += 1.0/numOfWaveforms; 
+}
+
 vector<double> Neuron::GetPosition()
 {
 	return fPosition;
@@ -47,16 +53,21 @@ vector<double> Neuron::GetWeight()
 	return fWeight;
 }
 
+double Neuron::GetPopularity()
+{
+	return fPopularity;
+}
+
 double Neuron::GetWeightDistanceFrom(vector<double> argInput)
 {
-        double weightDistance = 0;
+	double weightDistance = 0;
 
-        for(size_t i = 0; i < fWeight.size(); i++)
-        {
-                weightDistance += (argInput[i] - fWeight[i])*(argInput[i] - fWeight[i]);
-        }
+	for(size_t i = 0; i < fWeight.size(); i++)
+    {
+        weightDistance += (argInput[i] - fWeight[i])*(argInput[i] - fWeight[i]);
+    }
 
-        return sqrt(weightDistance);
+    return sqrt(weightDistance);
 }
 
 double Neuron::GetPositionDistanceFrom(vector<double> argPosition)
@@ -94,11 +105,14 @@ void Neuron::AdjustWeight(vector<double> input, double factor)
 ostream& operator<<(ostream & stream, Neuron *arg)
 {
 	stream<<arg->fVersion<<" ";
+	stream<<arg->fPopularity<<" ";
 	stream<<arg->fPosition.size()<<" ";
+
 	for(size_t i = 0; i < arg->fPosition.size(); i++)
 	{
 		stream<<arg->fPosition[i]<<" ";
 	}
+
 	stream<<arg->fWeight.size()<<" ";
 
 	for(size_t k = 0; k < arg->fWeight.size(); k++)
@@ -112,6 +126,7 @@ ostream& operator<<(ostream & stream, Neuron *arg)
 istream& operator>>(istream & stream, Neuron *arg)
 {
 	stream>>arg->fVersion;
+	stream>>arg->fPopularity;
 	if(arg->fVersion == 1)
 	{
 		size_t npos;
