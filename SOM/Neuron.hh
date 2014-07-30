@@ -22,8 +22,10 @@ class Neuron
 		void AdjustWeight(vector<double> input, double factor);
 		void SetPosition(vector<double> argPosition);
 		void SetWeight(vector<double> argWeight);
+		void IncreasePopularity(double numOfWaveforms);
 		vector<double> GetPosition();
 		vector<double> GetWeight();
+		double GetPopularity();
 		double GetWeightDistanceFrom(vector<double> argInput);
 		double GetPositionDistanceFrom(vector<double> argPosition);
 		double GetDistanceFromNeuron(Neuron* argNeuron);
@@ -44,6 +46,7 @@ class Neuron
 		
 	private:
 		size_t fVersion;
+		double fPopularity; 
 		vector<double> fPosition;
 		vector<double> fWeight;
 		
