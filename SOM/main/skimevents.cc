@@ -12,8 +12,154 @@
 #include "../SOM.hh"
 
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
 
 using namespace std;
+
+TChain *t = NULL;
+SOM* som = NULL; 
+MGTWaveform* Wave = NULL;
+MGWFBaselineRemover* base = NULL; 
+Neuron* bmu = NULL;
+MGTEvent* event = NULL;
+
+TCanvas c1;
+HistoToVector h2v;
+
+size_t nentries;
+double energy = 0.0;
+
+size_t nTraining = 5000;
+double numOfWaveforms = 20000;
+double numOfClassifications = 10000;
+
+
+void trainAndSaveSOM()
+{
+	vector<vector<double> > trainingData;
+
+	h2v.SetfN(200);
+
+	nentries = t->GetEntries();
+
+	for(size_t k = 0; k < nTraining; k++)
+	{
+		t->GetEntry(k);
+    	
+		Wave=event->GetWaveform(0);
+    	base->TransformInPlace(*Wave);
+    	energy=event->GetDigitizerData(0)->GetEnergy();
+    	
+		TH1D* h = Wave->GimmeHist();   
+		trainingData.push_back(h2v.ConvertToVector(h, energy));
+	}
+
+	vector<size_t> dimensions(2);
+
+	dimensions[0] = 200;// nx
+	dimensions[1] = 200;// ny
+	
+	size_t numWeights = 200;
+
+	som = new SOM(dimensions, numWeights);
+	som->SetNEpochs(10000);
+	som->SetInitialLearningRate(0.9);
+
+	//som->PrintNetwork();
+	som->TrainNetwork(trainingData);
+	//som->PrintNetwork();
+
+	cout<<"TrainingData is ";
+	for(int p = 0; p < trainingData[0].size(); p++)
+	{
+		cout<<trainingData[0][p]<<" ";
+	}
+	cout<<endl;
+	
+	ofstream outfile;
+	outfile.open("40000NeuronNetwork.dat");
+	outfile<<som;
+	outfile.close();
+
+	c1.Print("neuronwaveform.gif");
+}
+
+void loadSOM(char* filename)
+{
+	vector<double> junk;
+	vector<size_t> junky;
+	size_t numJunk = 0;
+
+	ifstream infile;
+	infile.open(filename);
+	som = new SOM(junky, numJunk);
+	infile>>som;
+	infile.close();
+}
+
+void determinePopularityOfNeurons()
+{
+	vector<vector<double> > popularityContest;
+
+	for(size_t l = nTraining; l < (numOfWaveforms + nTraining); l++)
+	{
+		t->GetEntry(l);
+    	
+		Wave=event->GetWaveform(0);
+    	base->TransformInPlace(*Wave);
+    	energy=event->GetDigitizerData(0)->GetEnergy();
+    	
+		TH1D* h3 = Wave->GimmeHist();   
+		popularityContest.push_back(h2v.ConvertToVector(h3, energy));
+	}
+
+	for(size_t q = 0; q < numOfWaveforms; q++)
+	{
+		bmu = som->FindBMU(popularityContest[q]);
+		bmu->IncreasePopularity(numOfWaveforms);
+	}
+
+	ofstream outfile;
+	outfile.open("popularNeurons.dat");
+	outfile<<som;
+	outfile.close();
+}
+
+void classifyWaveformsByPopularity()
+{
+	for(size_t b = (numOfWaveforms + nTraining); b < (numOfClassifications + numOfWaveforms + nTraining); b++)
+	{
+		t->GetEntry(b);
+    	
+		Wave=event->GetWaveform(0);
+    	base->TransformInPlace(*Wave);
+    	double energy=event->GetDigitizerData(0)->GetEnergy();
+    	
+		TH1D* h4 = Wave->GimmeHist();   
+		bmu = som->FindBMU(h2v.ConvertToVector(h4, energy));
+
+		TCanvas c2;
+		char fileName[256];
+
+		double popularity = bmu->GetPopularity();
+		
+		h4->GetYaxis()->SetRangeUser(-0.0002, 0.0012);
+		h4->Draw();
+
+		if(popularity * 20000 > 20)
+		{	
+			snprintf(fileName, sizeof(fileName), "popular/popular%d.gif", b+100000);
+			c2.Print(fileName);
+		}
+		else
+		{
+			snprintf(fileName, sizeof(fileName), "notPopular/notPopular%d.gif", b+100000);
+			c2.Print(fileName);
+		}
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -23,7 +169,7 @@ int main(int argc, char* argv[])
   	size_t endrun = startrun;
 
 
-  	TChain *t = new TChain("MGTree");
+  	t = new TChain("MGTree");
 
   	for(size_t i = startrun; i < endrun + 1; i++)
 	{
@@ -34,22 +180,21 @@ int main(int argc, char* argv[])
     	t->AddFile(infilename);
   	}
 
-  	MGTEvent* event = new MGTEvent();
+  	event = new MGTEvent();
   	t->SetBranchAddress("event", &event);
 
-  	MGTWaveform* Wave = new MGTWaveform();
+  	Wave = new MGTWaveform();
  
-  	MGWFBaselineRemover* base = new MGWFBaselineRemover();
+  	base = new MGWFBaselineRemover();
   	base->SetBaselineSamples(0);
   	base->SetStartSample(0);
   	base->SetBaselineTime(3000);
   	base->SetStartTime(0.);
 
-  	size_t nentries = t->GetEntries();
+  	nentries = t->GetEntries();
 
-  	TCanvas c1;
 	size_t next = 1, maxBin, T50Bin;
-  	double energy = 0.0, maxHeight, norm = 1;
+  	double maxHeight, norm = 1;
   	char title[100];
 
 	size_t n = 10;
@@ -109,52 +254,12 @@ int main(int argc, char* argv[])
 		if(next < 1) break; 
   	}
 
-	vector<vector<double> > trainingData;
 
-	HistoToVector h2v;
-	h2v.SetfN(200);
-	size_t nTraining = 100;
+	// trainAndSaveSOM();
+	// determinePopularityOfNeurons();
+	loadSOM("popularNeurons.dat");
+	classifyWaveformsByPopularity();
 
-	nentries = t->GetEntries();
-	for(int k = 0; k < nTraining; k++)
-	{
-		t->GetEntry(k);
-    
-    	Wave=event->GetWaveform(0);
-    	base->TransformInPlace(*Wave);
-    	energy=event->GetDigitizerData(0)->GetEnergy();
-
-    	TH1D* h = Wave->GimmeHist();   
-		trainingData.push_back(h2v.ConvertToVector(h, energy));
-	}
-
-	vector<size_t> dimensions(2);
-
-	dimensions[0] = 100;// nx
-	dimensions[1] = 100;// ny
-
-	size_t numWeights = 200;
-
-	SOM* som = new SOM(dimensions, numWeights);
-	som->SetNEpochs(10000);
-	som->SetInitialLearningRate(0.9);
-
-	//som->PrintNetwork();
-	som->TrainNetwork(trainingData);
-	//som->PrintNetwork();
-
-	Neuron* bmu = som->FindBMU(trainingData[0]);
-	cout<<bmu;
-	cout<<"TrainingData is ";
-	for(int p = 0; p < trainingData[0].size(); p++)
-	{
-		cout<<trainingData[0][p]<<" ";
-	}
-	cout<<endl;
-	
-	TH1D plot = som->PlotNeuron(rand()%som->fNeurons.size());
-	plot.Draw();
-	c1.Print("neuronwaveform.gif");
 }
 
 
