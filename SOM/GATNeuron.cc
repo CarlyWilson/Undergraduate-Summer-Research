@@ -1,6 +1,6 @@
 //---------------------------------
 //
-// Name: Neuron.cc
+// Name: GATNeuron.cc
 //
 // Description: initalizes neuron constructor
 //
@@ -10,20 +10,22 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <TRandom3.h>
 
-#include "Neuron.hh"
+#include "GATNeuron.hh"
 
 Neuron::Neuron(vector<double> argPosition, size_t numWeights)
 {
 	fPosition = argPosition;
 	fVersion = 1;
 	fPopularity = 0; 
+	TRandom3 rand;
 
 	double random;
 
 	for(size_t i = 0; i < numWeights; i++)
 	{
-		random = ((double)rand()/(double)RAND_MAX);
+		random = rand.Rndm();
 		fWeight.push_back(random);
 	}
 }

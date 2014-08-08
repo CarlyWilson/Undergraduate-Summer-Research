@@ -1,6 +1,6 @@
 //------------------------------
 //
-// Name: SOM.hh
+// Name: GATSOM.hh
 //
 // Description: defines a self organizing map (SOM)
 //
@@ -8,14 +8,14 @@
 //
 //-------------------------------
 
-#ifndef SOM_HH
-#define SOM_HH
+#ifndef GATSOM_HH
+#define GATSOM_HH
 
 #include <iostream>
 #include <vector>
 #include <TH1F.h>
 
-#include "Neuron.hh"
+#include "GATNeuron.hh"
 
 using namespace std;
 

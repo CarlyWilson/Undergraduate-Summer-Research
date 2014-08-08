@@ -1,6 +1,6 @@
 //----------------------------------
 //
-// Name: popularNeuronPlots.cc
+// Name: GATPopularNeuronPlots.cc
 //
 // Description: loads a trained som and uses it to print various neurons to a graph of popularity.
 //
@@ -18,9 +18,9 @@
 #include <MGTEvent.hh>
 #include <MGWFBaselineRemover.hh>
 
-#include "../HistoToVector.hh"
-#include "../Neuron.hh"
-#include "../SOM.hh"
+#include "../GATHistoToVector.hh"
+#include "../GATNeuron.hh"
+#include "../GATSOM.hh"
 
 #include <string>
 #include <iostream>
@@ -43,18 +43,24 @@ int main(int argc, char* argv[])
 	infile.close();
 
 	TCanvas c1;
-	TH2F *hcont4 = new TH2F("hcont4", "Popularity of Neurons", 200, -10, 200, 200, -10, 210);
+	TH2F *hcont4 = new TH2F("hcont4", "Popularity of Neurons", 200, 0, 100, 200, 0, 200);
+	TH1D h("h", "Popularity", 200, 0, 60); 
 
-	for(int i = 0; i < 20000; i++)
+	for(size_t i = 0; i < 20000; i++)
 	{
-		for(int j = 0; j < (s->fNeurons[i]->GetPopularity())*20000; j++)
+		for(size_t j = 0; j < (s->fNeurons[i]->GetPopularity())*20000; j++)
 		{
 			hcont4->Fill(i/200, i%200);
 		}
-	}
 
-	//gStyle->SetPalette(1);
+		h.Fill((s->fNeurons[i]->GetPopularity())*20000);
+	}
+	c1.SetLogz();
 	hcont4->Draw("CONT4Z");
 	c1.Print("popularNeurons.gif");
+
+	c1.SetLogy();
+	h.Draw();
+	c1.Print("popularNeuronsHisto.gif");
 }
 	

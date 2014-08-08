@@ -1,6 +1,6 @@
 //--------------------------------------------
 //
-// Name: HistoToVector.hh
+// Name: GATHistoToVector.hh
 //
 // Description: Converts a Waveform into a vector for the SOM
 //
@@ -8,11 +8,11 @@
 //
 //--------------------------------------------
 
-#ifndef HISTOTOVECTOR_HH
-#define HISTOTOVECTOR_HH
+#ifndef GATHISTOTOVECTOR_HH
+#define GATHISTOTOVECTOR_HH
 
-#include "Neuron.hh"
-#include "SOM.hh"
+#include "GATNeuron.hh"
+#include "GATSOM.hh"
 
 class HistoToVector
 {

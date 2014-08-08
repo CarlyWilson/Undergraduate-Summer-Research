@@ -1,6 +1,6 @@
 //--------------------------------
 //
-// Name: randMain.cc
+// Name: GATRandMain.cc
 //
 // Description: Initializes a network with random weight vectors, prints the network, 
 //	then finds the BMU to some input vector, and displays the position vector of that BMU
@@ -9,8 +9,8 @@
 //
 //-------------------------------
 
-#include "../Neuron.hh"
-#include "../SOM.hh"
+#include "../GATNeuron.hh"
+#include "../GATSOM.hh"
 
 #include <fstream>
 

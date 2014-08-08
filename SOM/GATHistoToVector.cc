@@ -1,6 +1,6 @@
 //----------------------------------------
 //
-// File Name: HistoToVector.cc
+// File Name: GATHistoToVector.cc
 //
 // Description: Initialization for HistoToVector header file and converts a histogram to a vector<double>.
 //
@@ -8,7 +8,7 @@
 //
 //----------------------------------------
 
-#include "HistoToVector.hh"
+#include "GATHistoToVector.hh"
 
 HistoToVector::HistoToVector()
 {

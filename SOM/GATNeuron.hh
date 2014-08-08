@@ -1,5 +1,5 @@
 //-----------------------------------------
-// Name: Neuron.hh
+// Name: GATNeuron.hh
 //
 // Description: defines a neuron for a self organizing map (SOM)
 //
@@ -7,8 +7,8 @@
 //
 //----------------------------------------
 
-#ifndef NEURON_HH
-#define NEURON_HH
+#ifndef GATNEURON_HH
+#define GATNEURON_HH
 
 #include <iostream>
 #include <vector>

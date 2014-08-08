@@ -7,9 +7,9 @@
 #include <MGTEvent.hh>
 #include <MGWFBaselineRemover.hh>
 
-#include "../HistoToVector.hh"
-#include "../Neuron.hh"
-#include "../SOM.hh"
+#include "../GATHistoToVector.hh"
+#include "../GATNeuron.hh"
+#include "../GATSOM.hh"
 
 #include <iostream>
 #include <fstream>
@@ -129,6 +129,12 @@ void determinePopularityOfNeurons()
 
 void classifyWaveformsByPopularity()
 {
+	TH1D pop("pop", "Popular vs. Unpopular Energy", 200, 0, 20000);
+	TH1D unPop("unpop", "Popular vs. Unpopular Energy",200, 0, 20000);
+
+	ofstream outfile;
+	outfile.open("popularityOfNeurons.dat");
+int total = 0, pop1 = 0, unPop1 = 0;
 	for(size_t b = (numOfWaveforms + nTraining); b < (numOfClassifications + numOfWaveforms + nTraining); b++)
 	{
 		t->GetEntry(b);
@@ -137,28 +143,44 @@ void classifyWaveformsByPopularity()
     	base->TransformInPlace(*Wave);
     	double energy=event->GetDigitizerData(0)->GetEnergy();
     	
-		TH1D* h4 = Wave->GimmeHist();   
+		TH1D* h4 = Wave->GimmeHist();
 		bmu = som->FindBMU(h2v.ConvertToVector(h4, energy));
 
-		TCanvas c2;
-		char fileName[256];
+		//char fileName[256];
 
 		double popularity = bmu->GetPopularity();
-		
-		h4->GetYaxis()->SetRangeUser(-0.0002, 0.0012);
-		h4->Draw();
+		cout << bmu->GetPosition()[0] << " " << bmu->GetPosition()[1] << endl;
+		if (b % 200 == 100)
+			exit(0);
 
+		outfile<<b<<" "<<popularity<<" "<<energy<<endl;
+		
+		//h4->GetYaxis()->SetRangeUser(-0.0002, 0.0012);
+		//h4->Draw();
+total++;
 		if(popularity * 20000 > 20)
 		{	
-			snprintf(fileName, sizeof(fileName), "popular/popular%d.gif", b+100000);
-			c2.Print(fileName);
+			//snprintf(fileName, sizeof(fileName), "popular/popular%d.gif", b+100000);
+			//c2.Print(fileName);
+			pop.Fill(energy);
+			pop1++;
 		}
 		else
 		{
-			snprintf(fileName, sizeof(fileName), "notPopular/notPopular%d.gif", b+100000);
-			c2.Print(fileName);
+			//snprintf(fileName, sizeof(fileName), "notPopular/notPopular%d.gif", b+100000);
+			//c2.Print(fileName);
+			unPop.Fill(energy);
+			unPop1++;
 		}
 	}
+
+	TCanvas c2;
+	unPop.SetLineColor(2);
+	pop.Draw("same");
+	unPop.Draw("same");
+	c2.Print("POPvsUNPOP.gif");
+cout<<"Total "<<total<<" pop "<<pop1<<" unPop "<<unPop1<<endl;
+	outfile.close();
 }
 
 int main(int argc, char* argv[])
@@ -212,7 +234,7 @@ int main(int argc, char* argv[])
 
     	Wave=event->GetWaveform(0);
     	base->TransformInPlace(*Wave);
-    	energy=event->GetDigitizerData(0)->GetEnergy();
+    	energy=event->GetDigitizerData(0)->GetEnergy();// write energies out
 
     	h1[i] = Wave->GimmeHist();   
 

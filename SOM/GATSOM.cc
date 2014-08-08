@@ -1,6 +1,6 @@
 //----------------------------
 //
-// Name: SOM.cc
+// Name: GATSOM.cc
 //
 // Description: contains implementations of functions listed in SOM.h
 //
@@ -12,7 +12,7 @@
 #include <sstream> 
 #include <TH1F.h>
 #include <TRandom3.h>
-#include "SOM.hh"
+#include "GATSOM.hh"
 
 SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 {

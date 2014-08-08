@@ -1,6 +1,6 @@
 //----------------------------------
 //
-// Name: neuronPLots.cc
+// Name: GATNeuronPLots.cc
 //
 // Description: loads a trained som and uses it to print various neurons to a graph.
 //
@@ -17,9 +17,9 @@
 #include <MGTEvent.hh>
 #include <MGWFBaselineRemover.hh>
 
-#include "../HistoToVector.hh"
-#include "../Neuron.hh"
-#include "../SOM.hh"
+#include "../GATHistoToVector.hh"
+#include "../GATNeuron.hh"
+#include "../GATSOM.hh"
 
 #include <string>
 #include <iostream>
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	infile>>s;
 	infile.close();
 
-	for(int i = 0; i < 10000; i++)
+	for(size_t i = 0; i < 10000; i++)
 	{
 		TCanvas c1;
 		TH1D plot1;
