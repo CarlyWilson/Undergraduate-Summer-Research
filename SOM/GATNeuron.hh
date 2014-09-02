@@ -15,10 +15,10 @@
 
 using namespace std;
 
-class Neuron
+class GATNeuron
 {
 	public:
-		Neuron(vector<double> argPosition, size_t numWeights);
+		GATNeuron(vector<double> argPosition, size_t numWeights);
 		void AdjustWeight(vector<double> input, double factor);
 		void SetPosition(vector<double> argPosition);
 		void SetWeight(vector<double> argWeight);
@@ -28,17 +28,17 @@ class Neuron
 		double GetPopularity();
 		double GetWeightDistanceFrom(vector<double> argInput);
 		double GetPositionDistanceFrom(vector<double> argPosition);
-		double GetDistanceFromNeuron(Neuron* argNeuron);
+		double GetDistanceFromNeuron(GATNeuron* argNeuron);
 
-		friend ostream& operator<<(ostream & stream, Neuron *arg);
-		friend ostream& operator<<(ostream & stream, Neuron &arg)
+		friend ostream& operator<<(ostream & stream, GATNeuron *arg);
+		friend ostream& operator<<(ostream & stream, GATNeuron &arg)
 		{
 			stream<<(&arg);
 			return stream;
 		};
 
-		friend istream& operator>>(istream & stream, Neuron *arg);
-		friend istream& operator>>(istream & stream, Neuron &arg)
+		friend istream& operator>>(istream & stream, GATNeuron *arg);
+		friend istream& operator>>(istream & stream, GATNeuron &arg)
 		{
 			stream>>(&arg);
 			return stream;

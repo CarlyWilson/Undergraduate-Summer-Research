@@ -14,7 +14,7 @@
 
 #include "GATNeuron.hh"
 
-Neuron::Neuron(vector<double> argPosition, size_t numWeights)
+GATNeuron::GATNeuron(vector<double> argPosition, size_t numWeights)
 {
 	fPosition = argPosition;
 	fVersion = 1;
@@ -30,37 +30,37 @@ Neuron::Neuron(vector<double> argPosition, size_t numWeights)
 	}
 }
 
-void Neuron::SetPosition(vector<double> argPosition)
+void GATNeuron::SetPosition(vector<double> argPosition)
 {
 	fPosition = argPosition;
 }
 
-void Neuron::SetWeight(vector<double> argWeight)
+void GATNeuron::SetWeight(vector<double> argWeight)
 {
 	fWeight = argWeight; 
 }
 
-void Neuron::IncreasePopularity(double numOfWaveforms)
+void GATNeuron::IncreasePopularity(double numOfWaveforms)
 {
 	fPopularity += 1.0/numOfWaveforms; 
 }
 
-vector<double> Neuron::GetPosition()
+vector<double> GATNeuron::GetPosition()
 {
 	return fPosition;
 }
 
-vector<double> Neuron::GetWeight()
+vector<double> GATNeuron::GetWeight()
 {
 	return fWeight;
 }
 
-double Neuron::GetPopularity()
+double GATNeuron::GetPopularity()
 {
 	return fPopularity;
 }
 
-double Neuron::GetWeightDistanceFrom(vector<double> argInput)
+double GATNeuron::GetWeightDistanceFrom(vector<double> argInput)
 {
 	double weightDistance = 0;
 
@@ -72,7 +72,7 @@ double Neuron::GetWeightDistanceFrom(vector<double> argInput)
     return sqrt(weightDistance);
 }
 
-double Neuron::GetPositionDistanceFrom(vector<double> argPosition)
+double GATNeuron::GetPositionDistanceFrom(vector<double> argPosition)
 {
 	double positionDistance = 0;
 
@@ -84,14 +84,14 @@ double Neuron::GetPositionDistanceFrom(vector<double> argPosition)
 	return sqrt(positionDistance);
 }
 
-double Neuron::GetDistanceFromNeuron(Neuron* argNeuron)
+double GATNeuron::GetDistanceFromNeuron(GATNeuron* argNeuron)
 {
 	vector<double> pos = argNeuron->GetPosition();
 	
 	return GetPositionDistanceFrom(pos);
 }
 
-void Neuron::AdjustWeight(vector<double> input, double factor)
+void GATNeuron::AdjustWeight(vector<double> input, double factor)
 {
     if(fWeight.size()!= input.size())
     {
@@ -104,7 +104,7 @@ void Neuron::AdjustWeight(vector<double> input, double factor)
 	}
 }
 
-ostream& operator<<(ostream & stream, Neuron *arg)
+ostream& operator<<(ostream & stream, GATNeuron *arg)
 {
 	stream<<arg->fVersion<<" ";
 	stream<<arg->fPopularity<<" ";
@@ -125,7 +125,7 @@ ostream& operator<<(ostream & stream, Neuron *arg)
 	return stream;
 }
 
-istream& operator>>(istream & stream, Neuron *arg)
+istream& operator>>(istream & stream, GATNeuron *arg)
 {
 	stream>>arg->fVersion;
 	stream>>arg->fPopularity;

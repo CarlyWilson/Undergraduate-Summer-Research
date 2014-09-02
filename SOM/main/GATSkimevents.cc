@@ -18,31 +18,18 @@
 
 using namespace std;
 
-TChain *t = NULL;
-SOM* som = NULL; 
-MGTWaveform* Wave = NULL;
-MGWFBaselineRemover* base = NULL; 
-Neuron* bmu = NULL;
-MGTEvent* event = NULL;
-
-TCanvas c1;
-HistoToVector h2v;
-
-size_t nentries;
-double energy = 0.0;
-
-size_t nTraining = 5000;
-double numOfWaveforms = 20000;
-double numOfClassifications = 10000;
+const size_t nTraining = 5000;
+const size_t numOfWaveforms = 20000;
+const size_t numOfClassifications = 10000;
 
 
-void trainAndSaveSOM()
+void trainAndSaveSOM(GATSOM* som, TChain* t, MGTWaveform* Wave, MGWFBaselineRemover* base, MGTEvent* event, GATHistoToVector h2v)
 {
 	vector<vector<double> > trainingData;
 
 	h2v.SetfN(200);
 
-	nentries = t->GetEntries();
+	size_t nentries = t->GetEntries();
 
 	for(size_t k = 0; k < nTraining; k++)
 	{
@@ -50,7 +37,7 @@ void trainAndSaveSOM()
     	
 		Wave=event->GetWaveform(0);
     	base->TransformInPlace(*Wave);
-    	energy=event->GetDigitizerData(0)->GetEnergy();
+    	double energy=event->GetDigitizerData(0)->GetEnergy();
     	
 		TH1D* h = Wave->GimmeHist();   
 		trainingData.push_back(h2v.ConvertToVector(h, energy));
@@ -63,7 +50,7 @@ void trainAndSaveSOM()
 	
 	size_t numWeights = 200;
 
-	som = new SOM(dimensions, numWeights);
+	som = new GATSOM(dimensions, numWeights);
 	som->SetNEpochs(10000);
 	som->SetInitialLearningRate(0.9);
 
@@ -83,10 +70,11 @@ void trainAndSaveSOM()
 	outfile<<som;
 	outfile.close();
 
+	TCanvas c1;
 	c1.Print("neuronwaveform.gif");
 }
 
-void loadSOM(char* filename)
+void loadSOM(GATSOM* som, char* filename)
 {
 	vector<double> junk;
 	vector<size_t> junky;
@@ -94,12 +82,12 @@ void loadSOM(char* filename)
 
 	ifstream infile;
 	infile.open(filename);
-	som = new SOM(junky, numJunk);
+	som = new GATSOM(junky, numJunk);
 	infile>>som;
 	infile.close();
 }
 
-void determinePopularityOfNeurons()
+void determinePopularityOfNeurons(GATSOM* som, TChain* t, MGTWaveform* Wave, MGWFBaselineRemover* base, MGTEvent* event, GATHistoToVector h2v)
 {
 	vector<vector<double> > popularityContest;
 
@@ -109,7 +97,7 @@ void determinePopularityOfNeurons()
     	
 		Wave=event->GetWaveform(0);
     	base->TransformInPlace(*Wave);
-    	energy=event->GetDigitizerData(0)->GetEnergy();
+    	double energy=event->GetDigitizerData(0)->GetEnergy();
     	
 		TH1D* h3 = Wave->GimmeHist();   
 		popularityContest.push_back(h2v.ConvertToVector(h3, energy));
@@ -117,7 +105,7 @@ void determinePopularityOfNeurons()
 
 	for(size_t q = 0; q < numOfWaveforms; q++)
 	{
-		bmu = som->FindBMU(popularityContest[q]);
+		GATNeuron* bmu = som->FindBMU(popularityContest[q]);
 		bmu->IncreasePopularity(numOfWaveforms);
 	}
 
@@ -127,35 +115,38 @@ void determinePopularityOfNeurons()
 	outfile.close();
 }
 
-void classifyWaveformsByPopularity()
+void classifyWaveformsByPopularity(GATSOM* som, TChain* t, MGTWaveform* Wave, MGWFBaselineRemover* base, MGTEvent* event, GATHistoToVector h2v)
 {
 	TH1D pop("pop", "Popular vs. Unpopular Energy", 200, 0, 20000);
 	TH1D unPop("unpop", "Popular vs. Unpopular Energy",200, 0, 20000);
 
 	ofstream outfile;
 	outfile.open("popularityOfNeurons.dat");
+
 int total = 0, pop1 = 0, unPop1 = 0;
 	for(size_t b = (numOfWaveforms + nTraining); b < (numOfClassifications + numOfWaveforms + nTraining); b++)
 	{
 		t->GetEntry(b);
     	
-		Wave=event->GetWaveform(0);
+		Wave = event->GetWaveform(0);
     	base->TransformInPlace(*Wave);
-    	double energy=event->GetDigitizerData(0)->GetEnergy();
+    	double energy = event->GetDigitizerData(0)->GetEnergy();
     	
 		TH1D* h4 = Wave->GimmeHist();
-		bmu = som->FindBMU(h2v.ConvertToVector(h4, energy));
+		GATNeuron* bmu = som->FindBMU(h2v.ConvertToVector(h4, energy));
 
-		//char fileName[256];
+		char fileName[256];
 
 		double popularity = bmu->GetPopularity();
-		cout << bmu->GetPosition()[0] << " " << bmu->GetPosition()[1] << endl;
+		cout<<h2v.ConvertToVector(h4, energy)[180]<<endl;
+	cout<<" energy "<<energy<<" h4 "<<h4->GetMean()<<" Pop "<<popularity<<endl;
+	cout << bmu->GetPosition()[0] << " " << bmu->GetPosition()[1] << endl;
 		if (b % 200 == 100)
 			exit(0);
 
 		outfile<<b<<" "<<popularity<<" "<<energy<<endl;
 		
-		//h4->GetYaxis()->SetRangeUser(-0.0002, 0.0012);
+		h4->GetYaxis()->SetRangeUser(-0.0002, 0.0012);
 		//h4->Draw();
 total++;
 		if(popularity * 20000 > 20)
@@ -190,8 +181,7 @@ int main(int argc, char* argv[])
   	size_t startrun = 10000496;
   	size_t endrun = startrun;
 
-
-  	t = new TChain("MGTree");
+	TChain *t = new TChain("MGTree");
 
   	for(size_t i = startrun; i < endrun + 1; i++)
 	{
@@ -201,19 +191,18 @@ int main(int argc, char* argv[])
     	cout<<"added "<<infilename<<endl;
     	t->AddFile(infilename);
   	}
-
-  	event = new MGTEvent();
+  	MGTEvent* event = new MGTEvent();
   	t->SetBranchAddress("event", &event);
 
-  	Wave = new MGTWaveform();
+  	MGTWaveform* Wave = new MGTWaveform();
  
-  	base = new MGWFBaselineRemover();
+  	MGWFBaselineRemover* base = new MGWFBaselineRemover();
   	base->SetBaselineSamples(0);
   	base->SetStartSample(0);
   	base->SetBaselineTime(3000);
   	base->SetStartTime(0.);
 
-  	nentries = t->GetEntries();
+  	size_t nentries = t->GetEntries();
 
 	size_t next = 1, maxBin, T50Bin;
   	double maxHeight, norm = 1;
@@ -226,7 +215,7 @@ int main(int argc, char* argv[])
 	TH1D** h1 = new TH1D* [n];
 	TH1D h100("h100", "", nBins, 0, nBins);
 
-  	for(size_t i = 0; i < n; i++)
+  	/*for(size_t i = 0; i < n; i++)
 	{
     	t->GetEntry(i);
     
@@ -274,13 +263,15 @@ int main(int argc, char* argv[])
 		c1.Update();
 		cin>>next;
 		if(next < 1) break; 
-  	}
+  	}*/
 
+	GATSOM* som;
+	GATHistoToVector h2v;
 
-	// trainAndSaveSOM();
-	// determinePopularityOfNeurons();
-	loadSOM("popularNeurons.dat");
-	classifyWaveformsByPopularity();
+	// trainAndSaveSOM(som ,t, Wave, base, event, h2v);
+	// determinePopularityOfNeurons(som, t, Wave, base, event, h2v);
+	loadSOM(som, "popularNeurons.dat");
+	classifyWaveformsByPopularity(som, t, Wave, base, event, h2v);
 
 }
 

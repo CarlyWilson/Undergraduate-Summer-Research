@@ -38,15 +38,22 @@ int main(int argc, char* argv[])
 	size_t numJunk = 0;
 
 	infile.open("popularNeurons.dat");
-	SOM *s = new SOM(junky, numJunk);
+	GATSOM *s = new GATSOM(junky, numJunk);
 	infile>>s;
 	infile.close();
 
 	TCanvas c1;
-	TH2F *hcont4 = new TH2F("hcont4", "Popularity of Neurons", 200, 0, 100, 200, 0, 200);
+	TH2F *hcont4 = new TH2F("hcont4", "Popularity of Neurons", 200, 0, 200, 200, 0, 200);
 	TH1D h("h", "Popularity", 200, 0, 60); 
+	GATNeuron *neuron;
 
-	for(size_t i = 0; i < 20000; i++)
+	for(int i=0;i<s->GetNeurons().size();i++)
+	{
+		  neuron=s->GetNeuron(i);
+	      hcont4->SetBinContent(neuron->GetPosition()[0],neuron->GetPosition()[1],(neuron->GetPopularity()*20000));
+		  h.Fill((neuron->GetPopularity()*20000));
+	}
+	/*for(size_t i = 0; i < 20000; i++)
 	{
 		for(size_t j = 0; j < (s->fNeurons[i]->GetPopularity())*20000; j++)
 		{
@@ -54,9 +61,9 @@ int main(int argc, char* argv[])
 		}
 
 		h.Fill((s->fNeurons[i]->GetPopularity())*20000);
-	}
+	}*/
 	c1.SetLogz();
-	hcont4->Draw("CONT4Z");
+	hcont4->Draw("COLZ");
 	c1.Print("popularNeurons.gif");
 
 	c1.SetLogy();

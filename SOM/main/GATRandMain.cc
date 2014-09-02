@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
 	size_t numWeights = 4;
 
-	SOM* som = new SOM(dimensions, numWeights);
+	GATSOM* som = new GATSOM(dimensions, numWeights);
 	som->SetNEpochs(100000);
 	som->SetInitialLearningRate(0.9);
 
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	som->TrainNetwork(trainingData);
 	som->PrintNetwork();
 
-	Neuron* bmu = som->FindBMU(trainingData[0]);
+	GATNeuron* bmu = som->FindBMU(trainingData[0]);
 	cout<<bmu;
 
 	ofstream outfile;
@@ -67,13 +67,13 @@ int main(int argc, char* argv[])
 	vector<size_t> junky;
 	size_t numJunk = 0;
 
-	Neuron *n = new Neuron(junk, numJunk);// with junk inputs since they will be over written
+	GATNeuron *n = new GATNeuron(junk, numJunk);// with junk inputs since they will be over written
 	infile>>n;
 	cout<<n;
 	infile.close();
 
 	infile.open("testSOM.dat");
-	SOM *s = new SOM(junky, numJunk);
+	GATSOM *s = new GATSOM(junky, numJunk);
 	infile>>s;
 	cout<<s;
 	infile.close();

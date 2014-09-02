@@ -2,7 +2,7 @@
 //
 // File Name: GATHistoToVector.cc
 //
-// Description: Initialization for HistoToVector header file and converts a histogram to a vector<double>.
+// Description: Initialization for GATHistoToVector header file and converts a histogram to a vector<double>.
 //
 // Author: Carly Jo Wilson
 //
@@ -10,13 +10,13 @@
 
 #include "GATHistoToVector.hh"
 
-HistoToVector::HistoToVector()
+GATHistoToVector::GATHistoToVector()
 {
 	fN = 100;
 	fNormalization = -1;
 }
 
-void HistoToVector::ConvertToVector()
+void GATHistoToVector::ConvertToVector()
 {
 	Normalize();
 	FindAlignmentPoint();
@@ -42,7 +42,7 @@ void HistoToVector::ConvertToVector()
 	}
 }
 
-void HistoToVector::Normalize()
+void GATHistoToVector::Normalize()
 {
 	if(fNormalization < 0)
 	{
@@ -52,7 +52,7 @@ void HistoToVector::Normalize()
 	fHist->Scale(1.0/fNormalization);
 }
 
-void HistoToVector::FindAlignmentPoint()
+void GATHistoToVector::FindAlignmentPoint()
 {
 	//default set fAlignmentPoint to T50
 	double max = fHist->GetMaximum();
@@ -63,32 +63,32 @@ void HistoToVector::FindAlignmentPoint()
 	while(fHist->GetBinContent(fAlignmentPoint) > alpoint) fAlignmentPoint--;
 }
 
-void HistoToVector::SetfN(size_t numOutputs)
+void GATHistoToVector::SetfN(size_t numOutputs)
 {
 	fN = numOutputs;
 }
 
-void HistoToVector::SetfAlignmentPoint(size_t fAlign)
+void GATHistoToVector::SetfAlignmentPoint(size_t fAlign)
 {
 	fAlignmentPoint = fAlign;
 }
 
-void HistoToVector::SetfNormalization(double fNorm)
+void GATHistoToVector::SetfNormalization(double fNorm)
 {
 	fNormalization = fNorm;
 }
 
-size_t HistoToVector::GetfN()
+size_t GATHistoToVector::GetfN()
 {
 	return fN;
 }
 
-size_t HistoToVector::GetfAlignmentPoint()
+size_t GATHistoToVector::GetfAlignmentPoint()
 {
 	return fAlignmentPoint;
 }
 
-double HistoToVector::GetfNormalization()
+double GATHistoToVector::GetfNormalization()
 {
 	return fNormalization;
 }

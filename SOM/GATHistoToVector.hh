@@ -14,10 +14,10 @@
 #include "GATNeuron.hh"
 #include "GATSOM.hh"
 
-class HistoToVector
+class GATHistoToVector
 {
 	public:
-		HistoToVector();
+		GATHistoToVector();
 		vector<double> ConvertToVector(TH1D* h, double argNorm = -1)
 		{
 			fHist = h;

@@ -36,12 +36,30 @@ int main(int argc, char* argv[])
 	vector<size_t> junky;
 	size_t numJunk = 0;
 
-	infile.open("trainedNetwork.dat");
-	SOM *s = new SOM(junky, numJunk);
+	//infile.open("trainedNetwork.dat");
+	infile.open("popularNeurons.dat");
+	GATSOM *s = new GATSOM(junky, numJunk);
 	infile>>s;
 	infile.close();
 
-	for(size_t i = 0; i < 10000; i++)
+	int xpos=60; int ypos=120;
+	int index=200*xpos+ypos; 
+	GATNeuron* neuron=s->GetNeuron(index);
+	cout<<neuron->GetPosition()[0]<<" "<<neuron->GetPosition()[1]<<endl;
+	//this way you can check you got the right index....
+	vector<double> weights=neuron->GetWeight();
+
+	TH1D* hn= new TH1D("hn","",weights.size(),0,weights.size());
+	for(int i=0;i<weights.size();i++)
+	{
+		 hn->SetBinContent(i+1,weights[i]);
+	}
+
+	TCanvas c1;
+	hn->Draw();
+	c1.Print("neuron.gif");
+
+	/*for(size_t i = 0; i < 10000; i++)
 	{
 		TCanvas c1;
 		TH1D plot1;
@@ -54,5 +72,5 @@ int main(int argc, char* argv[])
 		snprintf(fileName, sizeof(fileName), "columnsForGifs/column%drow%d.gif", (i%100) + 1000, (i/100) + 1000);
 		//snprintf(fileName, sizeof(fileName), "neuron%d.gif", i);
 		c1.Print(fileName);
-	}
+	}*/
 }

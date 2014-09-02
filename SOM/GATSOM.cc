@@ -14,7 +14,7 @@
 #include <TRandom3.h>
 #include "GATSOM.hh"
 
-SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
+GATSOM::GATSOM(vector<size_t> argDimensions, size_t numWeights)
 {
 	size_t ndim = argDimensions.size();
 
@@ -37,7 +37,7 @@ SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 
 		for(size_t i = 0; i < nx; i++)
 		{
-			fNeurons[i] = new Neuron(position, numWeights);
+			fNeurons[i] = new GATNeuron(position, numWeights);
 			position[0] = double(i);
 			fNeurons[i]->SetPosition(position);
 		}
@@ -54,7 +54,7 @@ SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 		{
 			for(size_t j = 0; j < ny; j++)
 			{
-				fNeurons[count] = new Neuron(position, numWeights);
+				fNeurons[count] = new GATNeuron(position, numWeights);
 				position[0] = double(i);
 				position[1] = double(j);
 				fNeurons[count]->SetPosition(position);
@@ -64,7 +64,7 @@ SOM::SOM(vector<size_t> argDimensions, size_t numWeights)
 	}
 }
 
-Neuron* SOM::FindBMU(vector<double> argInput)
+GATNeuron* GATSOM::FindBMU(vector<double> argInput)
 {
 	size_t nNeurons = fNeurons.size();
 	
@@ -84,7 +84,17 @@ Neuron* SOM::FindBMU(vector<double> argInput)
 	return BMNeuron;
 }
 
-TH1D SOM::PlotNeuron(size_t arg)
+GATNeuron* GATSOM::GetNeuron(size_t arg)
+{
+	return fNeurons[arg];
+}
+
+vector<GATNeuron*> GATSOM::GetNeurons()
+{
+	return fNeurons;
+}
+
+TH1D GATSOM::PlotNeuron(size_t arg)
 {
 	vector<double> weight = fNeurons[arg]->GetWeight();
 	size_t n = weight.size();
@@ -108,7 +118,7 @@ TH1D SOM::PlotNeuron(size_t arg)
 	return h;
 }
 
-void SOM::PrintNetwork()
+void GATSOM::PrintNetwork()
 {
 	for (size_t i = 0; i < fNeurons.size(); i++)
 	{
@@ -117,17 +127,17 @@ void SOM::PrintNetwork()
 	cout<<endl;
 }
 
-void SOM::SetNEpochs(size_t epochs)
+void GATSOM::SetNEpochs(size_t epochs)
 {
 		fnEpochs = epochs;
 }
 
-void SOM::SetInitialLearningRate(double initialLearningRate)
+void GATSOM::SetInitialLearningRate(double initialLearningRate)
 {
 		fInitialLearningRate = initialLearningRate;
 }
 
-ostream &operator<<(ostream & stream, SOM *arg)
+ostream &operator<<(ostream & stream, GATSOM *arg)
 {
 	stream<<arg->fVersion<<" ";
 	stream<<arg->fNeurons.size()<<" ";
@@ -150,7 +160,7 @@ ostream &operator<<(ostream & stream, SOM *arg)
 	return stream;
 }
 
-istream &operator>>(istream & stream, SOM *arg)
+istream &operator>>(istream & stream, GATSOM *arg)
 {
 	stream>>arg->fVersion;
 
@@ -166,7 +176,7 @@ istream &operator>>(istream & stream, SOM *arg)
 
 		for(size_t k = 0; k < nNeurons; k++)
 		{
-			arg->fNeurons[k] = new Neuron(trash, junk);
+			arg->fNeurons[k] = new GATNeuron(trash, junk);
 			stream>>arg->fNeurons[k];
 		}
 		size_t ndim;
@@ -186,7 +196,7 @@ istream &operator>>(istream & stream, SOM *arg)
 	}
 }
 
-void SOM::TrainNetwork(vector<vector<double> > trainingData)
+void GATSOM::TrainNetwork(vector<vector<double> > trainingData)
 {
 	double Rmap;
 	size_t nx, ny;
@@ -217,7 +227,7 @@ void SOM::TrainNetwork(vector<vector<double> > trainingData)
 		double learningRate = fInitialLearningRate*exp(-(double)t/(double)fnEpochs);
 		rt = Rmap*exp(-(double)t*log(Rmap)/(double)fnEpochs);
 		n = rand.Integer(nTraining);
-		Neuron *bmu = FindBMU(trainingData[n]);
+		GATNeuron *bmu = FindBMU(trainingData[n]);
 		vector<double> bmuPosition = bmu->GetPosition();
 		vector<double> weights = bmu->GetWeight();
 

@@ -19,31 +19,33 @@
 
 using namespace std;
 
-class SOM
+class GATSOM
 {
 	public: 
-		SOM(vector<size_t> argDimensions, size_t numWeights);
-		Neuron* FindBMU(vector<double> argInput);
+		GATSOM(vector<size_t> argDimensions, size_t numWeights);
+		GATNeuron* FindBMU(vector<double> argInput);
+		GATNeuron* GetNeuron(size_t arg);
+		vector<GATNeuron*> GetNeurons();
 		TH1D PlotNeuron(size_t arg);
 		void TrainNetwork(vector<vector<double> > trainingData);
 		void PrintNetwork();
 		void SetNEpochs(size_t epochs);
 		void SetInitialLearningRate(double initialLearningRate);
 
-		friend ostream& operator<<(ostream & stream, SOM *arg);
-		friend ostream& operator<<(ostream & stream, SOM &arg)
+		friend ostream& operator<<(ostream & stream, GATSOM *arg);
+		friend ostream& operator<<(ostream & stream, GATSOM &arg)
 		{
 			stream<<(&arg);
 			return stream;
 		};
 
-		friend istream& operator>>(istream & stream, SOM *arg);
-		friend istream& operator>>(istream & stream, SOM &arg)
+		friend istream& operator>>(istream & stream, GATSOM *arg);
+		friend istream& operator>>(istream & stream, GATSOM &arg)
 		{
 			stream>>(&arg);
 			return stream;
 		};
-		vector<Neuron*> fNeurons;
+		vector<GATNeuron*> fNeurons;
 
 	private: 
 		vector<size_t> fDimensions;
@@ -52,7 +54,7 @@ class SOM
 		size_t fnEpochs;
 		size_t fVersion;
 
-		Neuron* BMNeuron;
+		GATNeuron* BMNeuron;
 };
 
 #endif
