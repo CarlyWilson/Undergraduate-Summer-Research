@@ -21,6 +21,7 @@ GATSOM::GATSOM(vector<size_t> argDimensions, size_t numWeights)
 	fDimensions = argDimensions;
 	fInitialLearningRate = 0.9;
 	fnEpochs = 100000;
+	fDistanceCalc = 0;
 
 	fVersion = 1;
 	
@@ -87,6 +88,11 @@ GATNeuron* GATSOM::FindBMU(vector<double> argInput)
 GATNeuron* GATSOM::GetNeuron(size_t arg)
 {
 	return fNeurons[arg];
+}
+
+GATNeuron* GATSOM::SetDistCalType(size_t arg)
+{
+	fDistanceCalc = arg;
 }
 
 vector<GATNeuron*> GATSOM::GetNeurons()

@@ -26,6 +26,8 @@ class GATNeuron
 		vector<double> GetPosition();
 		vector<double> GetWeight();
 		double GetPopularity();
+		double GetEuclideanDistance();
+		double GetChiSquaredDistance();
 		double GetWeightDistanceFrom(vector<double> argInput);
 		double GetPositionDistanceFrom(vector<double> argPosition);
 		double GetDistanceFromNeuron(GATNeuron* argNeuron);
@@ -46,6 +48,7 @@ class GATNeuron
 		
 	private:
 		size_t fVersion;
+		size_t fDistanceCalc;
 		double fPopularity; 
 		vector<double> fPosition;
 		vector<double> fWeight;

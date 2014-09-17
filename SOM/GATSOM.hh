@@ -25,6 +25,7 @@ class GATSOM
 		GATSOM(vector<size_t> argDimensions, size_t numWeights);
 		GATNeuron* FindBMU(vector<double> argInput);
 		GATNeuron* GetNeuron(size_t arg);
+		GATNeuron* SetDistCalType(size_t arg);
 		vector<GATNeuron*> GetNeurons();
 		TH1D PlotNeuron(size_t arg);
 		void TrainNetwork(vector<vector<double> > trainingData);
@@ -53,6 +54,7 @@ class GATSOM
 		double fInitialLearningRate;
 		size_t fnEpochs;
 		size_t fVersion;
+		size_t fDistanceCalc;
 
 		GATNeuron* BMNeuron;
 };

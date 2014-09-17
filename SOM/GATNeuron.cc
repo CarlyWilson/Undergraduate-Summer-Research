@@ -19,6 +19,7 @@ GATNeuron::GATNeuron(vector<double> argPosition, size_t numWeights)
 	fPosition = argPosition;
 	fVersion = 1;
 	fPopularity = 0; 
+	fDistanceCalc = 0;
 	TRandom3 rand;
 
 	double random;
@@ -58,6 +59,22 @@ vector<double> GATNeuron::GetWeight()
 double GATNeuron::GetPopularity()
 {
 	return fPopularity;
+}
+
+double GATNeuron::GetEuclideanDistance()
+{
+}
+
+double GATNeuron::GetChiSquaredDistance()
+{
+	double sum = 0;
+
+	for(size_t i = 0; i < x_i.size(); i++)
+	{
+		sum += pow((x_i[i] - n_i[i], 2)/n_i[i]; // add something to not divide by zero
+	}
+
+	return sum;
 }
 
 double GATNeuron::GetWeightDistanceFrom(vector<double> argInput)
