@@ -60,9 +60,25 @@ int main(int argc, char* argv[])
 	infile>>som;
 	infile.close();
 
+	char file[200], filename[500], calibrationfile[500];
+
+	size_t startrun = 10000496;
+	size_t endrun = startrun;
+
 	TChain *t = new TChain("MGTree");
 
+	for(size_t k = startrun; k < endrun + 1; k++)
+	{
+		sprintf(file, "OR_run%d", k);
+		sprintf(filename, "/home/neutrino/mjd/ortec/data/built/P42661B/%s.root", file);
+
+		cout<<"added "<<filename<<endl;
+		t->AddFile(filename);
+	}
+
 	MGTEvent *event = new MGTEvent();
+	t->SetBranchAddress("event", &event);
+
 	MGTWaveform *Wave = new MGTWaveform();
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
