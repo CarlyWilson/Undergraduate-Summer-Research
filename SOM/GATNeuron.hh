@@ -26,7 +26,7 @@ class GATNeuron
 		vector<double> GetPosition();
 		vector<double> GetWeight();
 		double GetPopularity();
-		double GetEuclideanDistance();
+		double GetEuclideanDistance(vector<double> argInput);
 		double GetChiSquaredDistance();
 		double GetWeightDistanceFrom(vector<double> argInput);
 		double GetPositionDistanceFrom(vector<double> argPosition);
@@ -53,6 +53,11 @@ class GATNeuron
 		vector<double> fPosition;
 		vector<double> fWeight;
 		
+};
+
+enum DistanceCalulations
+{
+	
 };
 
 #endif

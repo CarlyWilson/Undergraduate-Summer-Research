@@ -61,20 +61,36 @@ double GATNeuron::GetPopularity()
 	return fPopularity;
 }
 
-double GATNeuron::GetEuclideanDistance()
+double GATNeuron::GetEuclideanDistance(vector<double> argInput)
 {
+	double euclideanDistance = 0;
+
+	for(size_t i = 0; i < fWeight.size(); i++)
+	{
+		euclideanDistance += (argInput[i] - fWeight[i])*(argInput[i] - fWeight[i]);
+	}
+
+	return sqrt(euclideanDistance);
 }
 
 double GATNeuron::GetChiSquaredDistance()
 {
-	double sum = 0;
+		double chiSquaredDistance = 0;
 
-	for(size_t i = 0; i < x_i.size(); i++)
-	{
-		sum += pow((x_i[i] - n_i[i], 2)/n_i[i]; // add something to not divide by zero
-	}
+		for(size_t i = 0; i < x_i.size(); i++)
+		{
+			if(n_i[i] == 0)
+			{
+				cout<<"Error: ChiSquared function cannot divide by zero."<<endl;
+				return 0;
+			}
+			else
+			{
+				chiSquaredDistance += pow((x_i[i] - n_i[i], 2)/n_i[i];
+			}
+		}
 
-	return sum;
+	return chiSquaredDistance;
 }
 
 double GATNeuron::GetWeightDistanceFrom(vector<double> argInput)
