@@ -28,7 +28,6 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	cout<<"hi"<<endl;
 	if(argc == 1)
 	{
 		cout<<"Error: Missing arguement for original number of Waveformns from trainSom.cc, number of additional Waveforms from determinePopularity, and the number of new Waveforms to be classified. In that order."<<endl;
@@ -44,7 +43,7 @@ int main(int argc, char* argv[])
 		cout<<"Error: Missing arguement for the number of new Waveforms to be classified."<<endl;
 		return 0;
 	}
-	cout<<"hi"<<endl;
+	
 	size_t nTraining; //the original number of waveforms from trainSom.cc
 	size_t numOfWaveforms; //the additional waveforms
 	size_t numOfClassifications; //the new data to be classified
@@ -53,23 +52,22 @@ int main(int argc, char* argv[])
 	nTraining = atoi(argv[1]);
 	numOfWaveforms = atoi(argv[2]);
 	numOfClassifications = atoi(argv[3]);
-	cout<<"hi"<<endl;
-	vector<size_t> placeHolder;
-	vector<double> placeHolder2;
-
-	size_t numHolder = 0;
+	
 	double energy;
 	double popularity;
-	cout<<"hi"<<endl;
-	TH2D energyVsPopularity("eVsP", "Energy vs. Popularity", 2000, 0.0, 1000000.0, 2000, 0.00001, 0.003);
-	cout<<"hi"<<endl;
+	double slice = 0.0001; //cut for popularity graphs
+	
+	TH2D energyVsPopularity("eVsP", "Energy vs. Popularity", 1500, 0.0, 1000000.0, 100, 0.00001, 0.003);
+	TH1D eBig("eBig", "", 15000, 0.0001, .001);
+	TH1D eSmall("eSmall", "", 15000, 0.00000001, 0.0001);
+	
 	GATSOM *som;
 
 	ifstream infile;
 	infile.open("neuronPopularity.dat");
 	
-	som = new GATSOM(placeHolder, numHolder);
-	cout<<"hi"<<endl;
+	som = new GATSOM();
+	
 	infile>>som;
 	infile.close();
 
@@ -82,7 +80,7 @@ int main(int argc, char* argv[])
 	size_t endrun = startrun;
 
 	TChain *t = new TChain("MGTree");
-	cout<<"hi"<<endl;
+	
 	for(size_t k = startrun; k < endrun + 1; k++)
 	{
 		sprintf(file, "OR_run%d", k);
@@ -91,7 +89,7 @@ int main(int argc, char* argv[])
 		cout<<"added "<<filename<<endl;
 		t->AddFile(filename);
 	}
-	cout<<"hi"<<endl;
+	
 	MGTEvent *event = new MGTEvent();
 	t->SetBranchAddress("event", &event);
 
@@ -100,7 +98,7 @@ int main(int argc, char* argv[])
 
 	GATHistoToVector h2v;
 	h2v.SetfN(200);
-	cout<<"hi"<<endl;
+	
 	for(size_t i = (numOfWaveforms + nTraining); i < (numOfClassifications + numOfWaveforms + nTraining); i++)
 	{
 		t->GetEntry(i);
@@ -119,11 +117,29 @@ int main(int argc, char* argv[])
 		outfile<<i<<" "<<"Energy: "<<energy<<" "<<"Popularity: "<<popularity<<" "<<endl;
 
 		energyVsPopularity.Fill(energy, popularity);
+
+		if(popularity >= slice)
+		{
+			eBig.Fill(popularity);
+		}
+		else
+		{
+			eSmall.Fill(popularity);
+		}
 	}
-	cout<<"hi"<<endl;
-	TCanvas c1;
-	energyVsPopularity.Draw();
+	
+	TCanvas c1, c2;
+	energyVsPopularity.Draw("colz");
+
+	eSmall.SetLineColor(2);
+	eBig.Draw("colz");
+	eSmall.Draw("same");
+
 	c1.Print("energyVsPopularity.gif");
+	c1.Print("energyVsPopularity.C");
+
+	c2.Print("bigANDsmall.gif");
+	c2.Print("bigANDsmall.C");
 
 	outfile.close();
 }

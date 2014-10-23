@@ -21,7 +21,7 @@ GATSOM::GATSOM(vector<size_t> argDimensions, size_t numWeights)
 	fDimensions = argDimensions;
 	fInitialLearningRate = 0.9;
 	fnEpochs = 100000;
-	fDistanceCalc = 0;
+	fDistanceCalc = Euclidean;
 
 	fVersion = 1;
 	
@@ -65,6 +65,11 @@ GATSOM::GATSOM(vector<size_t> argDimensions, size_t numWeights)
 	}
 }
 
+GATSOM::GATSOM()
+{
+	//Need anything in here?
+}
+
 GATNeuron* GATSOM::FindBMU(vector<double> argInput)
 {
 	size_t nNeurons = fNeurons.size();
@@ -73,7 +78,7 @@ GATNeuron* GATSOM::FindBMU(vector<double> argInput)
 	
 	for(size_t i = 0; i < nNeurons; i++)
 	{
-		double distance = fNeurons[i]->GetWeightDistanceFrom(argInput);
+		double distance = fNeurons[i]->GetWeightDistanceFrom(argInput, fDistanceCalc);
 
 		if(distance < lowestDistance)
 		{
@@ -90,9 +95,9 @@ GATNeuron* GATSOM::GetNeuron(size_t arg)
 	return fNeurons[arg];
 }
 
-GATNeuron* GATSOM::SetDistCalType(size_t arg)
+GATNeuron* GATSOM::SetDistCalType(DistanceCalcType type)
 {
-	fDistanceCalc = arg;
+	fDistanceCalc = type;
 }
 
 vector<GATNeuron*> GATSOM::GetNeurons()
@@ -141,6 +146,16 @@ void GATSOM::SetNEpochs(size_t epochs)
 void GATSOM::SetInitialLearningRate(double initialLearningRate)
 {
 		fInitialLearningRate = initialLearningRate;
+}
+
+double GATSOM::GetPopularityOfBMU(vector<double> argInput)
+{
+	return FindBMU(argInput)->GetPopularity();
+}
+
+void GATSOM::SetDistCalcType(DistanceCalcType type)
+{
+	fDistanceCalc = type;
 }
 
 ostream &operator<<(ostream & stream, GATSOM *arg)

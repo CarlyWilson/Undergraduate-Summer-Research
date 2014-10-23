@@ -44,10 +44,6 @@ int main(int argc, char* argv[])
 	nTraining = atoi(argv[1]);
 	numOfWaveforms = atoi(argv[2]);
 
-	vector<size_t> placeHolder;
-	vector<double> placeHolder2;
-
-	size_t numHolder = 0;
 	double energy;
 
 	GATSOM *som;
@@ -55,7 +51,7 @@ int main(int argc, char* argv[])
 	ifstream infile;
 	infile.open("TrainedSOM.dat");
 	
-	som = new GATSOM(placeHolder, numHolder);
+	som = new GATSOM();
 
 	infile>>som;
 	infile.close();

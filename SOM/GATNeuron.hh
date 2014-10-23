@@ -15,6 +15,12 @@
 
 using namespace std;
 
+enum DistanceCalcType
+{
+	Euclidean = 0,
+	Chisquared = 1
+};
+
 class GATNeuron
 {
 	public:
@@ -27,8 +33,8 @@ class GATNeuron
 		vector<double> GetWeight();
 		double GetPopularity();
 		double GetEuclideanDistance(vector<double> argInput);
-		double GetChiSquaredDistance();
-		double GetWeightDistanceFrom(vector<double> argInput);
+		double GetChiSquaredDistance(vector<double> argInput);
+		double GetWeightDistanceFrom(vector<double> argInput, DistanceCalcType type);
 		double GetPositionDistanceFrom(vector<double> argPosition);
 		double GetDistanceFromNeuron(GATNeuron* argNeuron);
 
@@ -48,16 +54,9 @@ class GATNeuron
 		
 	private:
 		size_t fVersion;
-		size_t fDistanceCalc;
 		double fPopularity; 
 		vector<double> fPosition;
 		vector<double> fWeight;
-		
-};
-
-enum DistanceCalulations
-{
-	
 };
 
 #endif

@@ -19,7 +19,6 @@ GATNeuron::GATNeuron(vector<double> argPosition, size_t numWeights)
 	fPosition = argPosition;
 	fVersion = 1;
 	fPopularity = 0; 
-	fDistanceCalc = 0;
 	TRandom3 rand;
 
 	double random;
@@ -73,36 +72,41 @@ double GATNeuron::GetEuclideanDistance(vector<double> argInput)
 	return sqrt(euclideanDistance);
 }
 
-double GATNeuron::GetChiSquaredDistance()
+double GATNeuron::GetChiSquaredDistance(vector<double> argInput)
 {
-		double chiSquaredDistance = 0;
+	double chiSquaredDistance = 0;
 
-		for(size_t i = 0; i < x_i.size(); i++)
+	for(size_t i = 0; i < fWeight.size(); i++)
+	{
+		if(argInput[i] == 0)
 		{
-			if(n_i[i] == 0)
-			{
-				cout<<"Error: ChiSquared function cannot divide by zero."<<endl;
-				return 0;
-			}
-			else
-			{
-				chiSquaredDistance += pow((x_i[i] - n_i[i], 2)/n_i[i];
-			}
+			cout<<"Error: ChiSquared function cannot divide by zero."<<endl;
+			return 0;
 		}
+		else
+		{
+			chiSquaredDistance += pow((fWeight[i] - argInput[i]), 2)/argInput[i];
+		}
+	}
 
 	return chiSquaredDistance;
 }
 
-double GATNeuron::GetWeightDistanceFrom(vector<double> argInput)
+double GATNeuron::GetWeightDistanceFrom(vector<double> argInput, DistanceCalcType type)
 {
-	double weightDistance = 0;
-
-	for(size_t i = 0; i < fWeight.size(); i++)
-    {
-        weightDistance += (argInput[i] - fWeight[i])*(argInput[i] - fWeight[i]);
-    }
-
-    return sqrt(weightDistance);
+	switch (type)
+	{
+		case Euclidean:
+			return GetEuclideanDistance(argInput);
+			break;
+		case Chisquared:
+			return GetChiSquaredDistance(argInput);
+			break;
+		default:
+			cout<<"Error: Fxn GetWeightDstianceFrom cannot accept DistanceCalcType of "<<type<<endl;
+			return 0.0;
+			break;
+	}
 }
 
 double GATNeuron::GetPositionDistanceFrom(vector<double> argPosition)
