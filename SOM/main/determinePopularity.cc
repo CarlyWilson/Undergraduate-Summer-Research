@@ -45,6 +45,9 @@ int main(int argc, char* argv[])
 	numOfWaveforms = atoi(argv[2]);
 
 	double energy;
+	
+	GATHistoToVector h2v;
+	h2v.SetfN(200);
 
 	GATSOM *som;
 
@@ -58,8 +61,8 @@ int main(int argc, char* argv[])
 
 	char file[200], filename[500], calibrationfile[500];
 
-	size_t startrun = 10000496;
-	size_t endrun = startrun;
+	size_t startrun = 10000501;
+	size_t endrun = 10000504;
 
 	TChain *t = new TChain("MGTree");
 
@@ -77,9 +80,6 @@ int main(int argc, char* argv[])
 
 	MGTWaveform *Wave = new MGTWaveform();
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
-
-	GATHistoToVector h2v;
-	h2v.SetfN(200);
 
 	vector<vector<double> > neuronPopularity;
 

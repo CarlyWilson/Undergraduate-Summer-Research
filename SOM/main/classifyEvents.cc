@@ -55,12 +55,19 @@ int main(int argc, char* argv[])
 	
 	double energy;
 	double popularity;
-	double slice = 0.0001; //cut for popularity graphs
+	double emin = 0, pmin = 0, pmax = 0.01, emax = 0.7e6;
 	
-	TH2D energyVsPopularity("eVsP", "Energy vs. Popularity", 1500, 0.0, 1000000.0, 100, 0.00001, 0.003);
-	TH1D eBig("eBig", "", 15000, 0.0001, .001);
-	TH1D eSmall("eSmall", "", 15000, 0.00000001, 0.0001);
+	GATHistoToVector h2v;
+	h2v.SetfN(200);
 	
+	TH2D energyVsPopularity("energyVsPopularity", "", 15000, emin, emax, 100, pmin, pmax);
+
+	TH1D he("he", "", 15000, emin, emax);
+	TH1D hp("hp", "", 100, pmin, pmax);
+
+	TH1D hb("hb", "", 15000, emin, emax);
+	TH1D hs("hs", "", 15000, emin, emax);
+
 	GATSOM *som;
 
 	ifstream infile;
@@ -76,8 +83,8 @@ int main(int argc, char* argv[])
 
 	char file[200], filename[500], calibrationfile[500];
 
-	size_t startrun = 10000496;
-	size_t endrun = startrun;
+	size_t startrun = 10000505;
+	size_t endrun = 10000516;
 
 	TChain *t = new TChain("MGTree");
 	
@@ -95,9 +102,6 @@ int main(int argc, char* argv[])
 
 	MGTWaveform *Wave = new MGTWaveform();
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
-
-	GATHistoToVector h2v;
-	h2v.SetfN(200);
 	
 	for(size_t i = (numOfWaveforms + nTraining); i < (numOfClassifications + numOfWaveforms + nTraining); i++)
 	{
@@ -117,29 +121,38 @@ int main(int argc, char* argv[])
 		outfile<<i<<" "<<"Energy: "<<energy<<" "<<"Popularity: "<<popularity<<" "<<endl;
 
 		energyVsPopularity.Fill(energy, popularity);
+		
+		hp.Fill(popularity);
+		he.Fill(energy);
 
-		if(popularity >= slice)
+		if(popularity > 0.0001)
 		{
-			eBig.Fill(popularity);
+			hb.Fill(energy);
 		}
 		else
 		{
-			eSmall.Fill(popularity);
+			hs.Fill(energy);
 		}
 	}
 	
 	TCanvas c1, c2;
-	energyVsPopularity.Draw("colz");
 
-	eSmall.SetLineColor(2);
-	eBig.Draw("colz");
-	eSmall.Draw("same");
+	c1.cd();
+	energyVsPopularity.Draw("colz");
 
 	c1.Print("energyVsPopularity.gif");
 	c1.Print("energyVsPopularity.C");
 
-	c2.Print("bigANDsmall.gif");
-	c2.Print("bigANDsmall.C");
+	c2.cd();
+	hb.SetLineColor(2);
+	hs.SetLineColor(4);
+
+	he.Draw();
+	hb.Draw("same");
+	hs.Draw("same");
+
+	c2.Print("slice.gif");
+	c2.Print("slice.C");
 
 	outfile.close();
 }

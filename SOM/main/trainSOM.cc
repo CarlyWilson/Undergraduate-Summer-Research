@@ -34,16 +34,26 @@ int main(int argc, char* argv[])
 
 	size_t nTraining;
 	size_t numWeights = 200;
+
 	double energy;
+
+	GATHistoToVector h2v;
+	h2v.SetfN(200);
 
 	nTraining = atoi(argv[1]);
 
+	GATSOM *som;
+
 	vector<vector<double> > trainingData;
+
+	vector<size_t> dimensions(2);
+	dimensions[0] = 200;// nx
+	dimensions[1] = 200;// ny
 	
 	char infile[200], infilename[500], calibrationfile[500];
 
   	size_t startrun = 10000496;
-  	size_t endrun = startrun;
+  	size_t endrun = 10000500;
 
 	TChain *t = new TChain("MGTree");
 	
@@ -62,9 +72,6 @@ int main(int argc, char* argv[])
 	MGTWaveform *Wave = new MGTWaveform();
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
-	GATHistoToVector h2v;
-	h2v.SetfN(200);
-
 	size_t nentries = t->GetEntries();
 
 	for(size_t k = 0; k < nTraining; k++)
@@ -77,11 +84,6 @@ int main(int argc, char* argv[])
 		trainingData.push_back(h2v.ConvertToVector(h, energy));
 	}
 
-	vector<size_t> dimensions(2);
-	dimensions[0] = 200;// nx
-	dimensions[1] = 200;// ny
-
-	GATSOM *som;
 	som = new GATSOM(dimensions, numWeights);
 	som->SetNEpochs(10000);
 	som->SetInitialLearningRate(0.9);
