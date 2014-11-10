@@ -94,7 +94,6 @@ double GATNeuron::GetChiSquaredDistance(vector<double> argInput)
 
 double GATNeuron::GetWeightDistanceFrom(vector<double> argInput, DistanceCalcType type)
 {
-	cout<<"type = "<<type<<endl;
 	switch (type)
 	{
 		case Euclidean:
