@@ -100,7 +100,6 @@ int main(int argc, char* argv[])
 		GATNeuron* bmu = som->FindBMU(neuronPopularity[j]);
 		bmu->IncreasePopularity(numOfWaveforms);
 	}
-
 	ofstream outfile;
 	outfile.open("neuronPopularity.dat");
 	outfile<<som;
