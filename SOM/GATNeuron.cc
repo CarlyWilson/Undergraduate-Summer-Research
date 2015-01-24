@@ -60,7 +60,7 @@ double GATNeuron::GetPopularity()
 	return fPopularity;
 }
 
-double GATNeuron::GetEuclideanDistance(vector<double> argInput)
+double GATNeuron::GetEuclideanDistance(vector<double> &argInput)
 {
 	double euclideanDistance = 0;
 
@@ -72,7 +72,7 @@ double GATNeuron::GetEuclideanDistance(vector<double> argInput)
 	return sqrt(euclideanDistance);
 }
 
-double GATNeuron::GetChiSquaredDistance(vector<double> argInput)
+double GATNeuron::GetChiSquaredDistance(vector<double> &argInput)
 {
 	double chiSquaredDistance = 0;
 
@@ -92,7 +92,7 @@ double GATNeuron::GetChiSquaredDistance(vector<double> argInput)
 	return chiSquaredDistance;
 }
 
-double GATNeuron::GetWeightDistanceFrom(vector<double> argInput, DistanceCalcType type)
+double GATNeuron::GetWeightDistanceFrom(vector<double> &argInput, DistanceCalcType type)
 {
 	switch (type)
 	{
@@ -128,7 +128,7 @@ double GATNeuron::GetDistanceFromNeuron(GATNeuron* argNeuron)
 	return GetPositionDistanceFrom(pos);
 }
 
-void GATNeuron::AdjustWeight(vector<double> input, double factor)
+void GATNeuron::AdjustWeight(vector<double> &input, double factor)
 {
     if(fWeight.size()!= input.size())
     {

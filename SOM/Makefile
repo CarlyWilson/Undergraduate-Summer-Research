@@ -16,8 +16,8 @@ ObjSuf = o
 ExeSuf = 
 CXX = g++
 LD = g++
-CXXFLAGS = -O -fPIC -O2
-LDFLAGS  = -O -fPIC $(shell root-config --ldflags)
+CXXFLAGS = -O -fPIC -O3 -funroll-loops
+LDFLAGS  = -O -fPIC $(shell root-config --ldflags) -lrt
 SOFLAGS  = -shared
 
 ROOTLIB= $(shell root-config --libs)
