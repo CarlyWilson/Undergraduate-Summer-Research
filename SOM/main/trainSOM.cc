@@ -22,7 +22,16 @@
 #include <string>
 #include <stdlib.h>
 
+#include <time.h>
+
 using namespace std;
+
+double diffclock(timespec start, timespec finish)
+{
+	double elapsed = static_cast<double>(finish.tv_sec - start.tv_sec);
+	elapsed += static_cast<double>(finish.tv_nsec - start.tv_nsec)/10000000000.0;
+	return elapsed * (-1000);
+}
 
 int main(int argc, char* argv[])
 {
@@ -31,6 +40,8 @@ int main(int argc, char* argv[])
 		cout<<"Error: Missing arguement for number of Waveforms"<<endl;
 		return 0;
 	}
+
+	int t1 = time(NULL);
 
 	size_t nTraining;
 	size_t numWeights = 200;
@@ -47,16 +58,14 @@ int main(int argc, char* argv[])
 	vector<vector<double> > trainingData;
 
 	vector<size_t> dimensions(2);
-	dimensions[0] = 200;// nx
-	dimensions[1] = 200;// ny
+	dimensions[0] = 50;// nx
+	dimensions[1] = 50;// ny
 	
 	char infile[200], infilename[500], calibrationfile[500];
 
   	size_t startrun = 10000496;
   	size_t endrun = 10000500;
-
 	TChain *t = new TChain("MGTree");
-	
 	for(size_t i = startrun; i < endrun + 1; i++)
 	{
     	sprintf(infile,"OR_run%d", i);
@@ -65,15 +74,17 @@ int main(int argc, char* argv[])
     	cout<<"added "<<infilename<<endl;
     	t->AddFile(infilename);
   	}
-
 	MGTEvent *event = new MGTEvent();
   	t->SetBranchAddress("event", &event);
 
 	MGTWaveform *Wave = new MGTWaveform();
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
-	size_t nentries = t->GetEntries();
+	som = new GATSOM(dimensions, numWeights);
+	som->SetNEpochs(10000);
+	som->SetInitialLearningRate(0.9);
 
+	size_t nentries = t->GetEntries();
 	for(size_t k = 0; k < nTraining; k++)
 	{
 		t->GetEntry(k);
@@ -81,24 +92,22 @@ int main(int argc, char* argv[])
 		base->TransformInPlace(*Wave);
 		energy = event->GetDigitizerData(0)->GetEnergy();
 		TH1D* h = Wave->GimmeHist();
-		trainingData.push_back(h2v.ConvertToVector(h, energy));
+		trainingData.push_back(h2v.ConvertToVector(h, som->GetDistCalcType(), energy));
 	}
-
-	som = new GATSOM(dimensions, numWeights);
-	som->SetNEpochs(10000);
-	som->SetInitialLearningRate(0.9);
-
+int t3 = time(NULL);
+struct timespec start, end;
+clock_gettime(CLOCK_MONOTONIC, &start);
 	//som->PrintNetwork();
 	som->TrainNetwork(trainingData);
 	//som->PrintNetwork();
+int t4 = time(NULL);
+clock_gettime(CLOCK_MONOTONIC, &end);
 
 	cout<<"TrainingData is ";
-
 	for(int p = 0; p < trainingData[0].size(); p++)
 	{
 		cout<<trainingData[0][p]<<" ";
 	}
-
 	cout<<endl;
 
 	ofstream outfile;
@@ -108,5 +117,10 @@ int main(int argc, char* argv[])
 
 	//TCanvas c1;
 	//c1.Print("neuronwaveform.gif");
+	int t2 = time(NULL);
+
+	cout<<"Entire program time "<<(t2-t1)<<endl;
+	cout<<"TrainNetwork "<<(t4-t3)<<endl;
+	cout<<"Milli "<<diffclock(end, start)<<endl;
 }
 

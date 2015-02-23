@@ -26,7 +26,8 @@ class GATSOM
 		GATSOM(); //constructor with no arguements
 		GATNeuron* FindBMU(vector<double> argInput);
 		GATNeuron* GetNeuron(size_t arg);
-		GATNeuron* SetDistCalType(DistanceCalcType type);
+		void SetDistCalType(DistanceCalcType type);
+		DistanceCalcType GetDistCalcType();
 		vector<GATNeuron*> GetNeurons();
 		TH1D PlotNeuron(size_t arg);
 		void TrainNetwork(vector<vector<double> > trainingData);

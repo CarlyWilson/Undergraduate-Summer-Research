@@ -24,6 +24,8 @@
 #include <string>
 #include <stdlib.h>
 
+#include <time.h>
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -44,6 +46,8 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	
+	int t1 = time(NULL);
+
 	size_t nTraining; //the original number of waveforms from trainSom.cc
 	size_t numOfWaveforms; //the additional waveforms
 	size_t numOfClassifications; //the new data to be classified
@@ -61,6 +65,7 @@ int main(int argc, char* argv[])
 	h2v.SetfN(200);
 	
 	TH2D energyVsPopularity("energyVsPopularity", "", 15000, emin, emax, 100, pmin, pmax);
+	TH2F enVsPop("energyVsPopularityTH2F", "", 15000, emin, emax, 100, pmin, pmax);
 
 	TH1D he("he", "", 15000, emin, emax);
 	TH1D hp("hp", "", 100, pmin, pmax);
@@ -87,7 +92,6 @@ int main(int argc, char* argv[])
 	size_t endrun = 10000516;
 
 	TChain *t = new TChain("MGTree");
-	
 	for(size_t k = startrun; k < endrun + 1; k++)
 	{
 		sprintf(file, "OR_run%d", k);
@@ -96,13 +100,12 @@ int main(int argc, char* argv[])
 		cout<<"added "<<filename<<endl;
 		t->AddFile(filename);
 	}
-	
 	MGTEvent *event = new MGTEvent();
 	t->SetBranchAddress("event", &event);
 
 	MGTWaveform *Wave = new MGTWaveform();
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
-	
+int f2 = time(NULL);
 	for(size_t i = (numOfWaveforms + nTraining); i < (numOfClassifications + numOfWaveforms + nTraining); i++)
 	{
 		t->GetEntry(i);
@@ -112,7 +115,8 @@ int main(int argc, char* argv[])
 		energy = event->GetDigitizerData(0)->GetEnergy();
 
 		TH1D* h = Wave->GimmeHist();
-		GATNeuron* bmu = som->FindBMU(h2v.ConvertToVector(h, energy));
+		vector<double> converted = h2v.ConvertToVector(h, som->GetDistCalcType(), energy);
+		GATNeuron* bmu = som->FindBMU(converted);
 
 		char fileName[256];
 
@@ -121,11 +125,12 @@ int main(int argc, char* argv[])
 		outfile<<i<<" "<<"Energy: "<<energy<<" "<<"Popularity: "<<popularity<<" "<<endl;
 
 		energyVsPopularity.Fill(energy, popularity);
+		enVsPop.Fill(energy, popularity);
 		
 		hp.Fill(popularity);
 		he.Fill(energy);
 
-		if(popularity > 0.0001)
+		if(popularity > 0.0006)
 		{
 			hb.Fill(energy);
 		}
@@ -134,8 +139,8 @@ int main(int argc, char* argv[])
 			hs.Fill(energy);
 		}
 	}
-	
-	TCanvas c1, c2;
+int f2end = time(NULL);	
+	TCanvas c1, c2, c3;
 
 	c1.cd();
 	energyVsPopularity.Draw("colz");
@@ -154,5 +159,15 @@ int main(int argc, char* argv[])
 	c2.Print("slice.gif");
 	c2.Print("slice.C");
 
+	c3.cd();
+	enVsPop.Draw("colz");
+
+	c3.Print("energyVspopularityTH2F.gif");
+	c3.Print("energyVsPopularityTH2F.C");
+
 	outfile.close();
+
+	int t2 = time(NULL);
+	cout<<"Total Program time "<<(t2-t1)<<endl;
+	cout<<"Second for loop "<<(f2end-f2)<<endl;
 }

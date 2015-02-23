@@ -27,6 +27,19 @@ void trainAndSaveSOM(GATSOM* som, TChain* t, MGTWaveform* Wave, MGWFBaselineRemo
 {
 	vector<vector<double> > trainingData;
 
+	vector<size_t> dimensions(2);
+
+	dimensions[0] = 200;// nx
+	dimensions[1] = 200;// ny
+	
+	size_t numWeights = 200;
+
+
+	som = new GATSOM(dimensions, numWeights);
+	som->SetNEpochs(10000);
+	som->SetInitialLearningRate(0.9);
+
+
 	h2v.SetfN(200);
 
 	size_t nentries = t->GetEntries();
@@ -40,19 +53,8 @@ void trainAndSaveSOM(GATSOM* som, TChain* t, MGTWaveform* Wave, MGWFBaselineRemo
     	double energy=event->GetDigitizerData(0)->GetEnergy();
     	
 		TH1D* h = Wave->GimmeHist();   
-		trainingData.push_back(h2v.ConvertToVector(h, energy));
+		trainingData.push_back(h2v.ConvertToVector(h, som->GetDistCalcType(), energy));
 	}
-
-	vector<size_t> dimensions(2);
-
-	dimensions[0] = 200;// nx
-	dimensions[1] = 200;// ny
-	
-	size_t numWeights = 200;
-
-	som = new GATSOM(dimensions, numWeights);
-	som->SetNEpochs(10000);
-	som->SetInitialLearningRate(0.9);
 
 	//som->PrintNetwork();
 	som->TrainNetwork(trainingData);
@@ -100,7 +102,7 @@ void determinePopularityOfNeurons(GATSOM* som, TChain* t, MGTWaveform* Wave, MGW
     	double energy=event->GetDigitizerData(0)->GetEnergy();
     	
 		TH1D* h3 = Wave->GimmeHist();   
-		popularityContest.push_back(h2v.ConvertToVector(h3, energy));
+		popularityContest.push_back(h2v.ConvertToVector(h3, som->GetDistCalcType(), energy));
 	}
 
 	for(size_t q = 0; q < numOfWaveforms; q++)
@@ -133,12 +135,13 @@ int total = 0, pop1 = 0, unPop1 = 0;
     	double energy = event->GetDigitizerData(0)->GetEnergy();
     	
 		TH1D* h4 = Wave->GimmeHist();
-		GATNeuron* bmu = som->FindBMU(h2v.ConvertToVector(h4, energy));
+		vector<double> converted = h2v.ConvertToVector(h4, som->GetDistCalcType(), energy);
+		GATNeuron* bmu = som->FindBMU(converted);
 
 		char fileName[256];
 
 		double popularity = bmu->GetPopularity();
-		cout<<h2v.ConvertToVector(h4, energy)[180]<<endl;
+		cout<<h2v.ConvertToVector(h4, som->GetDistCalcType(), energy)[180]<<endl;
 	cout<<" energy "<<energy<<" h4 "<<h4->GetMean()<<" Pop "<<popularity<<endl;
 	cout << bmu->GetPosition()[0] << " " << bmu->GetPosition()[1] << endl;
 		if (b % 200 == 100)

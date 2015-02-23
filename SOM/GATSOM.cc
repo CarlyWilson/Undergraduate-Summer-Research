@@ -97,9 +97,14 @@ GATNeuron* GATSOM::GetNeuron(size_t arg)
 	return fNeurons[arg];
 }
 
-GATNeuron* GATSOM::SetDistCalType(DistanceCalcType type)
+void GATSOM::SetDistCalType(DistanceCalcType type)
 {
 	fDistanceCalc = type;
+}
+
+DistanceCalcType GATSOM::GetDistCalcType()
+{
+	return fDistanceCalc;
 }
 
 vector<GATNeuron*> GATSOM::GetNeurons()

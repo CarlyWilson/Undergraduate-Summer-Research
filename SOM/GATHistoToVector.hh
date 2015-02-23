@@ -18,15 +18,15 @@ class GATHistoToVector
 {
 	public:
 		GATHistoToVector();
-		vector<double> ConvertToVector(TH1D* h, double argNorm = -1)
+		vector<double> ConvertToVector(TH1D* h, DistanceCalcType type, double argNorm = -1)
 		{
 			fHist = h;
 			fNormalization = argNorm;
-			ConvertToVector();
+			ConvertToVector(type);
 			return fVector;
 		};
 
-		void ConvertToVector();
+		void ConvertToVector(DistanceCalcType type);
 		void FindAlignmentPoint();
 		void Normalize();
 
@@ -41,6 +41,7 @@ class GATHistoToVector
 		size_t fN;
 		size_t fAlignmentPoint;
 		double fNormalization;
+		double sigma;
 		vector<double> fVector;
 		TH1D* fHist;
 };

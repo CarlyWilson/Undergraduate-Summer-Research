@@ -14,10 +14,10 @@
 SrcSuf = cc #hardcoded in some spots... 
 ObjSuf = o
 ExeSuf = 
-CXX = g++
-LD = g++
-CXXFLAGS = -O -fPIC -O3 -funroll-loops
-LDFLAGS  = -O -fPIC $(shell root-config --ldflags) -lrt
+CXX = g++44
+LD = g++44
+CXXFLAGS = -O -fPIC -O3 -funroll-loops -std=c++0x
+LDFLAGS  = -O -fPIC $(shell root-config --ldflags) -lrt -pthread
 SOFLAGS  = -shared
 
 ROOTLIB= $(shell root-config --libs)

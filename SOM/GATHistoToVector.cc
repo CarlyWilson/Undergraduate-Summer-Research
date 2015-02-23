@@ -9,6 +9,9 @@
 //----------------------------------------
 
 #include "GATHistoToVector.hh"
+#include <MGTWaveform.hh>
+#include <MGTEvent.hh>
+#include <MGWFBaselineRemover.hh>
 
 GATHistoToVector::GATHistoToVector()
 {
@@ -16,8 +19,12 @@ GATHistoToVector::GATHistoToVector()
 	fNormalization = -1;
 }
 
-void GATHistoToVector::ConvertToVector()
+void GATHistoToVector::ConvertToVector(DistanceCalcType type)
 {
+	MGWFBaselineRemover *base = new MGWFBaselineRemover();
+	double rms = base->GetBaselineRMS();
+	sigma = rms; 
+
 	Normalize();
 	FindAlignmentPoint();
 
@@ -35,10 +42,22 @@ void GATHistoToVector::ConvertToVector()
 		fAlignmentPoint -= (fHist->GetNbinsX() - fAlignmentPoint - 1); //check math
 	}
 
-	fVector.resize(fN);
-	for(size_t i = 0; i < fN; i++)
+	if(type == Euclidean)
 	{
-		fVector[i] = fHist->GetBinContent(fAlignmentPoint - fN/2 + i);
+		fVector.resize(fN);
+		for(size_t i = 0; i < fN; i++)
+		{	
+			fVector[i] = fHist->GetBinContent(fAlignmentPoint - fN/2 + i);
+		}
+	}
+	else if(type == Chisquared) 
+	{
+		fVector.resize(fN+1);
+		fVector[0] = sigma; 
+		for(size_t i = 0; i < fN; i++)
+		{	
+			fVector[i+1] = fHist->GetBinContent(fAlignmentPoint - fN/2 + i);
+		}
 	}
 }
 
@@ -50,6 +69,7 @@ void GATHistoToVector::Normalize()
 	}
 
 	fHist->Scale(1.0/fNormalization);
+	sigma = sigma/fNormalization;
 }
 
 void GATHistoToVector::FindAlignmentPoint()

@@ -22,6 +22,8 @@
 #include <string>
 #include <stdlib.h>
 
+#include <time.h>
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -36,6 +38,8 @@ int main(int argc, char* argv[])
 		cout<<"Error: Missing arguement for number of additional Waveforms"<<endl;
 		return 0;
 	}
+
+	int t1 = time(NULL);
 
 	size_t nTraining; //the original number of waveforms from trainSom.cc
 	size_t numOfWaveforms; //the additional waveforms
@@ -55,7 +59,6 @@ int main(int argc, char* argv[])
 	infile.open("TrainedSOM.dat");
 	
 	som = new GATSOM();
-
 	infile>>som;
 	infile.close();
 
@@ -65,7 +68,6 @@ int main(int argc, char* argv[])
 	size_t endrun = 10000504;
 
 	TChain *t = new TChain("MGTree");
-
 	for(size_t k = startrun; k < endrun + 1; k++)
 	{
 		sprintf(file, "OR_run%d", k);
@@ -74,7 +76,6 @@ int main(int argc, char* argv[])
 		cout<<"added "<<filename<<endl;
 		t->AddFile(filename);
 	}
-
 	MGTEvent *event = new MGTEvent();
 	t->SetBranchAddress("event", &event);
 
@@ -82,7 +83,6 @@ int main(int argc, char* argv[])
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
 	vector<vector<double> > neuronPopularity;
-
 	for(size_t i = nTraining; i < (numOfWaveforms + nTraining); i++)
 	{
 		t->GetEntry(i);
@@ -92,18 +92,23 @@ int main(int argc, char* argv[])
 		energy = event->GetDigitizerData(0)->GetEnergy();
 
 		TH1D* h = Wave->GimmeHist();
-		neuronPopularity.push_back(h2v.ConvertToVector(h, energy));
+		neuronPopularity.push_back(h2v.ConvertToVector(h, som->GetDistCalcType(), energy));
 	}
-
+int f3 = time(NULL);
 	for(size_t j = 0; j < numOfWaveforms; j++)
 	{
 		GATNeuron* bmu = som->FindBMU(neuronPopularity[j]);
 		bmu->IncreasePopularity(numOfWaveforms);
 	}
+int f3end = time(NULL);
 	ofstream outfile;
 	outfile.open("neuronPopularity.dat");
 	outfile<<som;
 	outfile.close();
+
+	int t2 = time(NULL);
+	cout<<"Total Program time "<<(t2-t1)<<endl;
+	cout<<"Third for loop "<<(f3end-f3)<<endl;
 }
 
 
