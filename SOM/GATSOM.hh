@@ -2,65 +2,65 @@
 //
 // Name: GATSOM.hh
 //
-// Description: defines a self organizing map (SOM)
+// Description: Defines a self organizing map (SOM)
 //
 // Author: Carly Wilson
 //
 //-------------------------------
 
-#ifndef GATSOM_HH
-#define GATSOM_HH
+#ifndef SOM_GATSOM_HH_
+#define SOM_GATSOM_HH_
 
 #include <iostream>
 #include <vector>
-#include <TH1F.h>
 
 #include "GATNeuron.hh"
+#include <TH1F.h>
 
 using namespace std;
 
 class GATSOM
 {
 	public: 
-		GATSOM(vector<size_t> argDimensions, size_t numWeights);
-		GATSOM(); //constructor with no arguements
-		GATNeuron* FindBMU(vector<double> argInput);
-		GATNeuron* GetNeuron(size_t arg);
-		void SetDistCalType(DistanceCalcType type);
-		DistanceCalcType GetDistCalcType();
-		vector<GATNeuron*> GetNeurons();
-		TH1D PlotNeuron(size_t arg);
+		GATSOM(vector<size_t> dimensions, size_t numWeights);
+		GATSOM();
+
+		GATNeuron* FindBMU(vector<double> weights);
+		TH1D PlotNeuron(size_t index);
 		void TrainNetwork(vector<vector<double> > trainingData);
 		void PrintNetwork();
-		void SetNEpochs(size_t epochs);
+
+		void SetNumEpochs(size_t epochs);
 		void SetInitialLearningRate(double initialLearningRate);
 		void SetDistCalcType(DistanceCalcType type);
-		double GetPopularityOfBMU(vector<double> argInput);
 
-		friend ostream& operator<<(ostream & stream, GATSOM *arg);
-		friend ostream& operator<<(ostream & stream, GATSOM &arg)
+		GATNeuron* GetNeuron(size_t index);
+		vector<GATNeuron*> GetNeurons();
+		DistanceCalcType GetDistCalcType();
+		double GetPopularityOfBMU(vector<double> weights);
+
+		friend ostream& operator<<(ostream & stream, GATSOM *som);
+		friend ostream& operator<<(ostream & stream, GATSOM &som)
 		{
-			stream<<(&arg);
+			stream<<(&som);
 			return stream;
 		};
 
-		friend istream& operator>>(istream & stream, GATSOM *arg);
-		friend istream& operator>>(istream & stream, GATSOM &arg)
+		friend istream& operator>>(istream & stream, GATSOM *som);
+		friend istream& operator>>(istream & stream, GATSOM &som)
 		{
-			stream>>(&arg);
+			stream>>(&som);
 			return stream;
 		};
-		vector<GATNeuron*> fNeurons;
 
 	private: 
-		vector<size_t> fDimensions;
-		double fDistance;
-		double fInitialLearningRate;
-		size_t fnEpochs;
-		size_t fVersion;
-		DistanceCalcType fDistanceCalc;
-
-		GATNeuron* BMNeuron;
+		size_t numEpochs;
+		size_t version;
+		vector<size_t> dimensions;
+		vector<GATNeuron*> neurons;
+		double distance;
+		double initialLearningRate;
+		DistanceCalcType distanceCalc;
 };
 
 #endif

@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
 	som = new GATSOM(dimensions, numWeights);
-	som->SetNEpochs(10000);
+	som->SetNumEpochs(10000);
 	som->SetInitialLearningRate(0.9);
 
 	size_t nentries = t->GetEntries();
