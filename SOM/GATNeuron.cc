@@ -128,7 +128,7 @@ double GATNeuron::GetDistanceFromNeuron(GATNeuron* argNeuron)
 	return GetPositionDistanceFrom(pos);
 }
 
-void GATNeuron::AdjustWeight(vector<double> &input, double factor)
+void GATNeuron::AdjustWeightClassic(vector<double> &input, double factor)
 {
     if(fWeight.size()!= input.size())
     {
@@ -141,39 +141,42 @@ void GATNeuron::AdjustWeight(vector<double> &input, double factor)
 	}
 }
 
-ostream& operator<<(ostream & stream, GATNeuron *arg)
-{
+void GATNeuron::AdjustWeightBatch(vector<double> &numerator, double denominator){
+    for(size_t i = 0; i < fWeight.size(); i++)
+	{
+		fWeight[i] = (numerator[i])/denominator;
+	}
+}
+
+ostream& operator<<(ostream & stream, GATNeuron *arg){
 	stream<<arg->fVersion<<" ";
 	stream<<arg->fPopularity<<" ";
 	stream<<arg->fPosition.size()<<" ";
 
-	for(size_t i = 0; i < arg->fPosition.size(); i++)
-	{
+	for(size_t i = 0; i < arg->fPosition.size(); i++){
 		stream<<arg->fPosition[i]<<" ";
 	}
 
 	stream<<arg->fWeight.size()<<" ";
 
-	for(size_t k = 0; k < arg->fWeight.size(); k++)
-	{
+	for(size_t k = 0; k < arg->fWeight.size(); k++){
 		stream<<arg->fWeight[k]<<" ";
 	}
+
 	stream<<endl;
 	return stream;
 }
 
-istream& operator>>(istream & stream, GATNeuron *arg)
-{
+istream& operator>>(istream & stream, GATNeuron *arg){
 	stream>>arg->fVersion;
 	stream>>arg->fPopularity;
-	if(arg->fVersion == 1)
-	{
+
+	if(arg->fVersion == 1){
 		size_t npos;
 		stream>>npos;
 		arg->fPosition.resize(npos);
 
-		for(size_t i = 0; i < npos; i++)
-		{
+		for(size_t i = 0; i < npos; i++){
 			stream>>arg->fPosition[i];
 		}
 
@@ -181,13 +184,11 @@ istream& operator>>(istream & stream, GATNeuron *arg)
 		stream>>nw;
 		arg->fWeight.resize(nw);
 
-		for(size_t k = 0; k < nw; k++)
-		{
+		for(size_t k = 0; k < nw; k++){
 			stream>>arg->fWeight[k];
 		}
 	}
-	else
-	{
+	else{
 		cerr<<"Unknown version of Neuron"<<endl;
 	}
 	return stream;

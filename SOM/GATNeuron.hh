@@ -25,7 +25,8 @@ class GATNeuron
 {
 	public:
 		GATNeuron(vector<double> argPosition, size_t numWeights);
-		void AdjustWeight(vector<double> &input, double factor);
+		void AdjustWeightClassic(vector<double> &input, double factor);
+		void AdjustWeightBatch(vector<double> &input, double factor);
 		void SetPosition(vector<double> argPosition);
 		void SetWeight(vector<double> argWeight);
 		void IncreasePopularity(double numOfWaveforms);

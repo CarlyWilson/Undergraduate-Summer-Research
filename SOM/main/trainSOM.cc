@@ -98,7 +98,7 @@ int t3 = time(NULL);
 struct timespec start, end;
 clock_gettime(CLOCK_MONOTONIC, &start);
 	//som->PrintNetwork();
-	som->TrainNetwork(trainingData);
+	som->TrainNetwork(trainingData, som->GetAlgorithmType());
 	//som->PrintNetwork();
 int t4 = time(NULL);
 clock_gettime(CLOCK_MONOTONIC, &end);
