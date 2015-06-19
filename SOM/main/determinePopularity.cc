@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 	GATSOM *som;
 
 	ifstream infile;
-	infile.open("TrainedSOM.dat");
+	infile.open("TrainedSOMClassic.dat");
 	
 	som = new GATSOM();
 	infile>>som;
@@ -102,7 +102,7 @@ int f3 = time(NULL);
 	}
 int f3end = time(NULL);
 	ofstream outfile;
-	outfile.open("neuronPopularity.dat");
+	outfile.open("neuronPopularityClassic.dat");
 	outfile<<som;
 	outfile.close();
 

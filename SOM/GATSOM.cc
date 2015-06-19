@@ -24,7 +24,7 @@ GATSOM::GATSOM(vector<size_t> dimensions, size_t numWeights){
 	version = 1;
 
 	distanceCalc = Euclidean;
-	trainingType = Classic;
+	trainingType = Batch;
 	
 	if(numDimensions > 2){
 		cout<<"Error: Dimensions must be either 1 or 2"<<endl;
@@ -34,11 +34,11 @@ GATSOM::GATSOM(vector<size_t> dimensions, size_t numWeights){
 	if(numDimensions == 1){
 		size_t numDimensionsX = dimensions[0];
 		neurons.resize(numDimensionsX);
-		vector<double> position(numDimensions);
+		vector<size_t> position(numDimensions);
 
 		for(size_t i = 0; i < numDimensionsX; i++){
 			neurons[i] = new GATNeuron(position, numWeights);
-			position[0] = double(i);
+			position[0] = i;
 			neurons[i]->SetPosition(position);
 		}
 	}
@@ -47,13 +47,13 @@ GATSOM::GATSOM(vector<size_t> dimensions, size_t numWeights){
 		size_t numDimensionsY = dimensions[1];
 		size_t index = 0;
 		neurons.resize(numDimensionsX*numDimensionsY);
-		vector<double> position(numDimensions);
+		vector<size_t> position(numDimensions);
 		
 		for(size_t row = 0; row < numDimensionsX; row++){
 			for(size_t column = 0; column < numDimensionsY; column++){
 				neurons[index] = new GATNeuron(position, numWeights);
-				position[0] = double(row);
-				position[1] = double(column);
+				position[0] = row;
+				position[1] = column;
 				neurons[index]->SetPosition(position);
 				index++;
 			}
@@ -72,7 +72,7 @@ GATNeuron* GATSOM::FindBMU(vector<double> weights){
 	size_t numNeurons = neurons.size();
 	double lowestDistance = 1e6;
 
-	GATNeuron* BMNeuron;
+	GATNeuron* BMNeuron = NULL;
 	
 	for(size_t i = 0; i < numNeurons; i++){
 		double distance = neurons[i]->GetWeightDistanceFrom(weights, distanceCalc);
@@ -87,7 +87,7 @@ GATNeuron* GATSOM::FindBMU(vector<double> weights){
 
 TH1D GATSOM::PlotNeuron(size_t index){
 	vector<double> weight = neurons[index]->GetWeight();
-	vector<double> position = neurons[index]->GetPosition();
+	vector<size_t> position = neurons[index]->GetPosition();
 	size_t numWeights = weight.size();
 
 	string title;
@@ -133,7 +133,7 @@ void GATSOM::ClassicTrainingAlgorithm(vector<vector<double> > trainingData){
 		double radiusOverTime = mapRadius*exp(-(double)time*log(mapRadius)/(double)numEpochs);
 		size_t randomNumber = rand.Integer(numTraining);
 		GATNeuron *bmu = FindBMU(trainingData[randomNumber]);
-		vector<double> bmuPosition = bmu->GetPosition();
+		vector<size_t> bmuPosition = bmu->GetPosition();
 		vector<double> weights = bmu->GetWeight();
 
 		for(size_t i = 0; i < numNeurons; i++){
@@ -147,7 +147,19 @@ void GATSOM::ClassicTrainingAlgorithm(vector<vector<double> > trainingData){
 void GATSOM::BatchTrainingAlgorithm(vector<vector<double> > trainingData){
 	size_t numDimensionsX, numDimensionsY;
 	size_t numDimensions = dimensions.size();
+	size_t numNeurons = neurons.size();
+	size_t numTraining = trainingData.size();
 	double mapRadius;
+	const double THRESHOLD = 0.1;
+	vector<vector<double> > neuronDistances;
+	neuronDistances.resize(numNeurons);
+	
+	/*for(size_t row = 0; row < numNeurons; row++){
+		neuronDistances[row].resize(numNeurons);
+		for(size_t column = 0; column < numNeurons; column++){
+			neuronDistances[row][column] = neurons[row]->GetDistanceFromNeuron(neurons[column]);
+		}
+	}*/
 
 	if(numDimensions == 1){
 		numDimensionsX = dimensions[0];
@@ -159,33 +171,65 @@ void GATSOM::BatchTrainingAlgorithm(vector<vector<double> > trainingData){
 		mapRadius = (numDimensionsX >= numDimensionsY ? 0.5*double(numDimensionsX) : 0.5*double(numDimensionsY));
 	}
 
-	size_t numTraining = trainingData.size();
-	size_t numNeurons = neurons.size();
-
-	TRandom3 rand;
-
 	for(size_t time = 0; time < numEpochs; time++){
 		vector<vector<double> > numerator;
+		//vector<vector<double> > factorsForNeurons;
 		vector<double> denominator;
-		double learningRate = initialLearningRate*exp(-(double)time/(double)numEpochs);
-		double radiusOverTime = mapRadius*exp(-(double)time*log(mapRadius)/(double)numEpochs);
-		size_t randomNumber = rand.Integer(numTraining);
+		denominator.resize(numNeurons);
+		numerator.resize(numNeurons);
 
-		for(size_t input = 1; input <= trainingData.size(); input++){
-			GATNeuron *bmu = FindBMU(trainingData[randomNumber]);
-			vector<double> bmuPosition = bmu->GetPosition();
+		for(size_t i = 0; i < numNeurons; i++){
+			numerator[i].resize(trainingData[0].size());
+			denominator[i] = 0;
+
+			for(size_t j = 0; j < trainingData[0].size(); j++){
+				numerator[i][j] = 0;
+			}
+		}
+
+		double radiusOverTime = mapRadius*exp(-(double)time*log(mapRadius)/(double)numEpochs);
+		//factorsForNeurons.resize(numNeurons);
+
+	/*	for(size_t row = 0; row < numNeurons; row++){
+			factorsForNeurons[row].resize(numNeurons);
+
+			for(size_t column = 0; column < numNeurons; column++){
+				factorsForNeurons[row][column] = exp(-neuronDistances[row][column]/(radiusOverTime*radiusOverTime));
+			}
+		}*/
+
+		for(size_t input = 0; input < trainingData.size(); input++){
+			GATNeuron *bmu = FindBMU(trainingData[input]);
+			vector<size_t> bmuPosition = bmu->GetPosition();
+			size_t indexBMU = (bmuPosition[0]*numNeurons) + bmuPosition[1];
 			vector<double> weights = bmu->GetWeight();
 
-			for(size_t i = 1; i <= numNeurons; i++){
+			for(size_t i = 0; i < numNeurons; i++){
+				/*
+				if(factorsForNeurons[i][indexBMU] < THRESHOLD)
+					continue;
+	
+				*/
+				/*
+				double factor = exp(-neuronDistances[i][indexBMU]/(radiusOverTime*radiusOverTime));
+				for(size_t j = 0; j < trainingData[input].size(); j++){
+					//numerator[i][j] += factorsForNeurons[i][indexBMU]*trainingData[input][j];
+					//denominator[i] += factorsForNeurons[i][indexBMU];
+					numerator[i][j] += factor*trainingData[input][j];
+					denominator[i] += factor;
+				}*/
+				
 				double distance = neurons[i]->GetDistanceFromNeuron(bmu);
 				double factor = exp(-distance/(radiusOverTime*radiusOverTime));
-
+				
 				for(int j = 0; j < trainingData[input].size(); j++){
 					numerator[i][j] += factor*trainingData[input][j];
 					denominator[i] += factor;
 				}
+				
 			}
 		}
+
 		for(size_t i = 0; i < numNeurons; i++){
 			neurons[i]->AdjustWeightBatch(numerator[i], denominator[i]);
 		}
@@ -278,7 +322,7 @@ istream &operator>>(istream & stream, GATSOM *som){
 		cout<<"numNeurons: "<<numNeurons<<endl;
 		som->neurons.resize(numNeurons);
 
-		vector<double> trash;
+		vector<size_t> trash;
 		size_t junk = 0;
 
 		for(size_t i = 0; i < numNeurons; i++){

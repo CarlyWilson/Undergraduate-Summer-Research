@@ -12,6 +12,7 @@
 
 #include <TH1D.h>
 #include <TChain.h>
+#include <TCanvas.h>
 
 #include <MGTWaveform.hh>
 #include <MGTEvent.hh>
@@ -58,8 +59,8 @@ int main(int argc, char* argv[])
 	vector<vector<double> > trainingData;
 
 	vector<size_t> dimensions(2);
-	dimensions[0] = 50;// nx
-	dimensions[1] = 50;// ny
+	dimensions[0] = 5;// nx
+	dimensions[1] = 5;// ny
 	
 	char infile[200], infilename[500], calibrationfile[500];
 
@@ -81,7 +82,7 @@ int main(int argc, char* argv[])
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
 	som = new GATSOM(dimensions, numWeights);
-	som->SetNumEpochs(10000);
+	som->SetNumEpochs(1000);
 	som->SetInitialLearningRate(0.9);
 
 	size_t nentries = t->GetEntries();
@@ -111,12 +112,12 @@ clock_gettime(CLOCK_MONOTONIC, &end);
 	cout<<endl;
 
 	ofstream outfile;
-	outfile.open("TrainedSOM.dat");
+	outfile.open("TrainedSOMBatchOpt.dat");
 	outfile<<som;
 	outfile.close();
 
 	//TCanvas c1;
-	//c1.Print("neuronwaveform.gif");
+	//c1.Print("neuronwaveformClassic.gif");
 	int t2 = time(NULL);
 
 	cout<<"Entire program time "<<(t2-t1)<<endl;

@@ -16,7 +16,8 @@ ObjSuf = o
 ExeSuf = 
 CXX = g++44
 LD = g++44
-CXXFLAGS = -O -fPIC -O3 -funroll-loops -std=c++0x
+# CXXFLAGS = -O -fPIC -O3 -funroll-loops -std=c++0x
+CXXFLAGS = -fPIC -O0 -funroll-loops -std=c++0x -g
 LDFLAGS  = -O -fPIC $(shell root-config --ldflags) -lrt -pthread
 SOFLAGS  = -shared
 

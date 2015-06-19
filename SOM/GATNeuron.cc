@@ -14,7 +14,7 @@
 
 #include "GATNeuron.hh"
 
-GATNeuron::GATNeuron(vector<double> argPosition, size_t numWeights)
+GATNeuron::GATNeuron(vector<size_t> argPosition, size_t numWeights)
 {
 	fPosition = argPosition;
 	fVersion = 1;
@@ -30,7 +30,7 @@ GATNeuron::GATNeuron(vector<double> argPosition, size_t numWeights)
 	}
 }
 
-void GATNeuron::SetPosition(vector<double> argPosition)
+void GATNeuron::SetPosition(vector<size_t> argPosition)
 {
 	fPosition = argPosition;
 }
@@ -45,7 +45,7 @@ void GATNeuron::IncreasePopularity(double numOfWaveforms)
 	fPopularity += 1.0/numOfWaveforms; 
 }
 
-vector<double> GATNeuron::GetPosition()
+vector<size_t> GATNeuron::GetPosition()
 {
 	return fPosition;
 }
@@ -109,7 +109,7 @@ double GATNeuron::GetWeightDistanceFrom(vector<double> &argInput, DistanceCalcTy
 	}
 }
 
-double GATNeuron::GetPositionDistanceFrom(vector<double> argPosition)
+double GATNeuron::GetPositionDistanceFrom(vector<size_t> argPosition)
 {
 	double positionDistance = 0;
 
@@ -123,7 +123,7 @@ double GATNeuron::GetPositionDistanceFrom(vector<double> argPosition)
 
 double GATNeuron::GetDistanceFromNeuron(GATNeuron* argNeuron)
 {
-	vector<double> pos = argNeuron->GetPosition();
+	vector<size_t> pos = argNeuron->GetPosition();
 	
 	return GetPositionDistanceFrom(pos);
 }

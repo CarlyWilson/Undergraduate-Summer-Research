@@ -24,19 +24,19 @@ enum DistanceCalcType
 class GATNeuron
 {
 	public:
-		GATNeuron(vector<double> argPosition, size_t numWeights);
+		GATNeuron(vector<size_t> argPosition, size_t numWeights);
 		void AdjustWeightClassic(vector<double> &input, double factor);
 		void AdjustWeightBatch(vector<double> &input, double factor);
-		void SetPosition(vector<double> argPosition);
+		void SetPosition(vector<size_t> argPosition);
 		void SetWeight(vector<double> argWeight);
 		void IncreasePopularity(double numOfWaveforms);
-		vector<double> GetPosition();
+		vector<size_t> GetPosition();
 		vector<double> GetWeight();
 		double GetPopularity();
 		double GetEuclideanDistance(vector<double> &argInput);
 		double GetChiSquaredDistance(vector<double> &argInput);
 		double GetWeightDistanceFrom(vector<double> &argInput, DistanceCalcType type);
-		double GetPositionDistanceFrom(vector<double> argPosition);
+		double GetPositionDistanceFrom(vector<size_t> argPosition);
 		double GetDistanceFromNeuron(GATNeuron* argNeuron);
 
 		friend ostream& operator<<(ostream & stream, GATNeuron *arg);
@@ -56,7 +56,7 @@ class GATNeuron
 	private:
 		size_t fVersion;
 		double fPopularity; 
-		vector<double> fPosition;
+		vector<size_t> fPosition;
 		vector<double> fWeight;
 };
 

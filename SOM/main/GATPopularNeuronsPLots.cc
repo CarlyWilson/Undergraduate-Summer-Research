@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 	vector<size_t> junky;
 	size_t numJunk = 0;
 
-	infile.open("popularNeurons.dat");
+	infile.open("TrainedSOMClassic.dat");
 	GATSOM *s = new GATSOM(junky, numJunk);
 	infile>>s;
 	infile.close();
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 	{
 		  neuron=s->GetNeuron(i);
 	      hcont4->SetBinContent(neuron->GetPosition()[0],neuron->GetPosition()[1],(neuron->GetPopularity()*20000));
-		  h.Fill((neuron->GetPopularity()*20000));
+		   h.Fill((neuron->GetPopularity()*20000));
 	}
 	/*for(size_t i = 0; i < 20000; i++)
 	{
@@ -64,10 +64,10 @@ int main(int argc, char* argv[])
 	}*/
 	c1.SetLogz();
 	hcont4->Draw("COLZ");
-	c1.Print("popularNeurons.gif");
+	c1.Print("classic.gif");
 
 	c1.SetLogy();
 	h.Draw();
-	c1.Print("popularNeuronsHisto.gif");
+	c1.Print("classicHisto.gif");
 }
 	

@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 	GATSOM *som;
 
 	ifstream infile;
-	infile.open("neuronPopularity.dat");
+	infile.open("neuronPopularityClassic.dat");
 	
 	som = new GATSOM();
 	
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	infile.close();
 
 	ofstream outfile;
-	outfile.open("energyAndPopularity.dat");
+	outfile.open("energyAndPopularityClassic.dat");
 
 	char file[200], filename[500], calibrationfile[500];
 
@@ -145,8 +145,8 @@ int f2end = time(NULL);
 	c1.cd();
 	energyVsPopularity.Draw("colz");
 
-	c1.Print("energyVsPopularity.gif");
-	c1.Print("energyVsPopularity.C");
+	c1.Print("energyVsPopularityClassic.gif");
+	c1.Print("energyVsPopularityClassic.C");
 
 	c2.cd();
 	hb.SetLineColor(2);
@@ -156,14 +156,14 @@ int f2end = time(NULL);
 	hb.Draw("same");
 	hs.Draw("same");
 
-	c2.Print("slice.gif");
-	c2.Print("slice.C");
+	c2.Print("sliceClassic.gif");
+	c2.Print("sliceClassic.C");
 
 	c3.cd();
 	enVsPop.Draw("colz");
 
-	c3.Print("energyVspopularityTH2F.gif");
-	c3.Print("energyVsPopularityTH2F.C");
+	c3.Print("energyVspopularityTH2FClassic.gif");
+	c3.Print("energyVsPopularityTH2FClassic.C");
 
 	outfile.close();
 

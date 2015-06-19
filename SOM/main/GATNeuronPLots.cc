@@ -37,27 +37,33 @@ int main(int argc, char* argv[])
 	size_t numJunk = 0;
 
 	//infile.open("trainedNetwork.dat");
-	infile.open("popularNeurons.dat");
+	infile.open("TrainedSOMBatchOpt.dat");
 	GATSOM *s = new GATSOM(junky, numJunk);
 	infile>>s;
 	infile.close();
 
-	int xpos=60; int ypos=120;
-	int index=200*xpos+ypos; 
-	GATNeuron* neuron=s->GetNeuron(index);
-	cout<<neuron->GetPosition()[0]<<" "<<neuron->GetPosition()[1]<<endl;
+	//int xpos=0; int ypos=0;
+	//int index=200*xpos+ypos; 
+	//cout<<neuron->GetPosition()[0]<<" "<<neuron->GetPosition()[1]<<endl;
 	//this way you can check you got the right index....
-	vector<double> weights=neuron->GetWeight();
-
-	TH1D* hn= new TH1D("hn","",weights.size(),0,weights.size());
-	for(int i=0;i<weights.size();i++)
-	{
-		 hn->SetBinContent(i+1,weights[i]);
-	}
 
 	TCanvas c1;
-	hn->Draw();
-	c1.Print("neuron.gif");
+
+	for(int j = 0; j < s->GetNeurons().size(); j++){
+		GATNeuron* neuron=s->GetNeuron(j);
+		vector<double> weights=neuron->GetWeight();
+		TH1D* hn = new TH1D("hn","",weights.size(),0,weights.size());
+
+		for(int i=0;i<weights.size();i++)
+		{
+			 hn->SetBinContent(i+1,weights[i]);
+		}
+
+		hn->Draw("same");
+	}
+
+	c1.Print("batchOpt.gif");
+	c1.Print("batchOpt.C");
 
 	/*for(size_t i = 0; i < 10000; i++)
 	{
