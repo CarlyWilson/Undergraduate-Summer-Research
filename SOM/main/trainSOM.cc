@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 	MGWFBaselineRemover *base = new MGWFBaselineRemover();
 
 	som = new GATSOM(dimensions, numWeights);
-	som->SetNumEpochs(1000);
+	som->SetNumEpochs(21);
 	som->SetInitialLearningRate(0.9);
 
 	size_t nentries = t->GetEntries();
@@ -112,7 +112,9 @@ clock_gettime(CLOCK_MONOTONIC, &end);
 	cout<<endl;
 
 	ofstream outfile;
-	outfile.open("TrainedSOMBatchOpt.dat");
+	outfile.open("TrainedSOMClassic.dat");
+	//outfile.open("TrainedSOMBatch.dat");
+	//outfile.open("TrainedSOMBatchOpt.dat");
 	outfile<<som;
 	outfile.close();
 

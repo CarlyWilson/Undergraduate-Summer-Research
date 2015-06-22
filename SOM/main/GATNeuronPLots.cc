@@ -37,7 +37,9 @@ int main(int argc, char* argv[])
 	size_t numJunk = 0;
 
 	//infile.open("trainedNetwork.dat");
-	infile.open("TrainedSOMBatchOpt.dat");
+	infile.open("TrainedSOMClassic.dat");
+	//infile.open("TrainedSOMBatch.dat");
+	//infile.open("TrainedSOMBatchOpt.dat");
 	GATSOM *s = new GATSOM(junky, numJunk);
 	infile>>s;
 	infile.close();

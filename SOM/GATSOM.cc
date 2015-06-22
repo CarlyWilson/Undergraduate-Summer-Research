@@ -126,20 +126,20 @@ void GATSOM::ClassicTrainingAlgorithm(vector<vector<double> > trainingData){
 	size_t numTraining = trainingData.size();
 	size_t numNeurons = neurons.size();
 
-	TRandom3 rand;
+	//TRandom3 rand;
 
 	for(size_t time = 0; time < numEpochs; time++){
 		double learningRate = initialLearningRate*exp(-(double)time/(double)numEpochs);
 		double radiusOverTime = mapRadius*exp(-(double)time*log(mapRadius)/(double)numEpochs);
-		size_t randomNumber = rand.Integer(numTraining);
-		GATNeuron *bmu = FindBMU(trainingData[randomNumber]);
+		//size_t randomNumber = rand.Integer(numTraining);
+		GATNeuron *bmu = FindBMU(trainingData[time]);
 		vector<size_t> bmuPosition = bmu->GetPosition();
 		vector<double> weights = bmu->GetWeight();
 
 		for(size_t i = 0; i < numNeurons; i++){
 			double distance = neurons[i]->GetDistanceFromNeuron(bmu);
 			double factor = learningRate*exp(-distance/(2.0*radiusOverTime*radiusOverTime));
-			neurons[i]->AdjustWeightClassic(trainingData[randomNumber], factor);
+			neurons[i]->AdjustWeightClassic(trainingData[i], factor);
 		}
 	}
 }
